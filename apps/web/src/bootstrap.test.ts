@@ -29,9 +29,7 @@ describe('bootstrap', () => {
       copyOptions: { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } },
     });
 
-    expect(root.querySelector('.hero h1')?.textContent).toContain(
-      'Set up your live show controls',
-    );
+    expect(root.querySelector('.hero h1')?.textContent).toContain('Set up your live show controls');
     expect(root.querySelectorAll('.card').length).toBe(3);
   });
 
@@ -69,9 +67,7 @@ describe('bootstrap', () => {
 
     bootstrap({
       selector: '#custom',
-      steps: [
-        { title: 'Only step', subtitle: 'Solo', description: 'desc', file: 'f.json' },
-      ],
+      steps: [{ title: 'Only step', subtitle: 'Solo', description: 'desc', file: 'f.json' }],
       copyOptions: { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } },
     });
 

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export interface StreamdeckButton {
   key: string;
@@ -14,7 +15,10 @@ export interface StreamdeckLinks {
 
 export class ConfigNotFoundError extends Error {
   readonly code = 'CONFIG_NOT_FOUND';
-  constructor(public readonly path: string, cause?: unknown) {
+  constructor(
+    public readonly path: string,
+    cause?: unknown,
+  ) {
     super(`Streamdeck config not found at ${path}`);
     this.name = 'ConfigNotFoundError';
     if (cause !== undefined) this.cause = cause;
@@ -23,7 +27,10 @@ export class ConfigNotFoundError extends Error {
 
 export class ConfigReadError extends Error {
   readonly code = 'CONFIG_READ_ERROR';
-  constructor(public readonly path: string, cause: unknown) {
+  constructor(
+    public readonly path: string,
+    cause: unknown,
+  ) {
     super(`Failed to read streamdeck config at ${path}`);
     this.name = 'ConfigReadError';
     this.cause = cause;
@@ -32,7 +39,10 @@ export class ConfigReadError extends Error {
 
 export class ConfigParseError extends Error {
   readonly code = 'CONFIG_PARSE_ERROR';
-  constructor(public readonly path: string, cause: unknown) {
+  constructor(
+    public readonly path: string,
+    cause: unknown,
+  ) {
     super(`Streamdeck config at ${path} is not valid JSON`);
     this.name = 'ConfigParseError';
     this.cause = cause;
@@ -50,8 +60,14 @@ export class ConfigValidationError extends Error {
   }
 }
 
-export function defaultConfigPath(cwd: string = process.cwd()): string {
-  return join(cwd, '..', '..', 'config', 'streamdeck-links.example.json');
+/**
+ * Resolve the default config path relative to this module's on-disk location,
+ * not the caller's cwd. Works for both `src/links.ts` (tsx dev) and the emitted
+ * `dist/links.js`, since both sit three levels below the repo root.
+ */
+export function defaultConfigPath(anchor: string = import.meta.url): string {
+  const anchorPath = anchor.startsWith('file://') ? fileURLToPath(anchor) : anchor;
+  return join(dirname(anchorPath), '..', '..', '..', 'config', 'streamdeck-links.example.json');
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

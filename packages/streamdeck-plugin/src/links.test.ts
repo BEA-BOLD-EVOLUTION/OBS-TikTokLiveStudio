@@ -85,10 +85,7 @@ describe('validateLinks', () => {
       buttons: ['nope', null],
     });
     expect(err.issues).toEqual(
-      expect.arrayContaining([
-        'buttons[0] must be an object',
-        'buttons[1] must be an object',
-      ]),
+      expect.arrayContaining(['buttons[0] must be an object', 'buttons[1] must be an object']),
     );
   });
 
@@ -116,9 +113,7 @@ describe('parseLinks', () => {
   });
 
   it('throws ConfigValidationError when JSON shape is wrong', () => {
-    expect(() => parseLinks(JSON.stringify({ profileName: 'x' }))).toThrow(
-      ConfigValidationError,
-    );
+    expect(() => parseLinks(JSON.stringify({ profileName: 'x' }))).toThrow(ConfigValidationError);
   });
 });
 
@@ -162,14 +157,22 @@ describe('loadLinks', () => {
 });
 
 describe('defaultConfigPath', () => {
-  it('points two levels up to config/streamdeck-links.example.json', () => {
-    const result = defaultConfigPath('/a/b/c');
-    expect(result.replace(/\\/g, '/')).toBe('/a/config/streamdeck-links.example.json');
+  it('resolves relative to a module anchor, walking up three levels to config/', () => {
+    // e.g. packages/streamdeck-plugin/src/links.ts -> repo root -> config/
+    const result = defaultConfigPath('/repo/packages/streamdeck-plugin/src/links.ts');
+    expect(result.replace(/\\/g, '/')).toBe('/repo/config/streamdeck-links.example.json');
   });
 
-  it('uses process.cwd() by default', () => {
+  it('accepts a file:// URL anchor', () => {
+    const result = defaultConfigPath('file:///repo/packages/streamdeck-plugin/dist/index.js');
+    expect(result.replace(/\\/g, '/')).toBe('/repo/config/streamdeck-links.example.json');
+  });
+
+  it('uses this module as the default anchor', () => {
     const result = defaultConfigPath();
-    expect(result).toMatch(/streamdeck-links\.example\.json$/);
+    expect(result).toMatch(/[\\/]config[\\/]streamdeck-links\.example\.json$/);
+    // Must resolve to the real repo config, not something under cwd.
+    expect(result).not.toMatch(/[\\/]packages[\\/]streamdeck-plugin[\\/]/);
   });
 });
 

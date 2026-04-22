@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runPluginScaffold } from './index.js';
+import { pathToFileURL } from 'node:url';
+import { isMainModule, runPluginScaffold } from './index.js';
 import {
   ConfigNotFoundError,
   ConfigParseError,
@@ -84,9 +85,7 @@ describe('runPluginScaffold', () => {
       },
     });
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('/wrong.json is invalid'),
-    );
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('/wrong.json is invalid'));
     const issueLines = logger.warn.mock.calls
       .map((c) => c[0] as unknown)
       .filter((line) => typeof line === 'string' && line.startsWith('  - '));
@@ -142,6 +141,22 @@ describe('runPluginScaffold', () => {
     });
 
     expect(seenPath).toMatch(/streamdeck-links\.example\.json$/);
+  });
+
+  it('isMainModule returns true when argv matches the module URL', () => {
+    const modulePath = process.platform === 'win32' ? 'C:\\a\\b.js' : '/a/b.js';
+    const url = pathToFileURL(modulePath).href;
+    expect(isMainModule(url, modulePath)).toBe(true);
+  });
+
+  it('isMainModule returns false when argv points at a different file', () => {
+    const url = pathToFileURL(process.platform === 'win32' ? 'C:\\a\\b.js' : '/a/b.js').href;
+    const other = process.platform === 'win32' ? 'C:\\a\\c.js' : '/a/c.js';
+    expect(isMainModule(url, other)).toBe(false);
+  });
+
+  it('isMainModule returns false when argv is undefined', () => {
+    expect(isMainModule('file:///a/b.js', undefined)).toBe(false);
   });
 
   it('exposes distinct error classes for consumers', () => {

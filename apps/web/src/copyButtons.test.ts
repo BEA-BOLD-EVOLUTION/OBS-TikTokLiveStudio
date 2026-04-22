@@ -98,9 +98,7 @@ describe('attachCopyHandlers', () => {
     const button = root.querySelector<HTMLButtonElement>('.copy-btn')!;
 
     button.click();
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Clipboard copy failed: no clipboard API available',
-    );
+    expect(logger.warn).toHaveBeenCalledWith('Clipboard copy failed: no clipboard API available');
   });
 
   it('ignores buttons that have no data-copy attribute', () => {

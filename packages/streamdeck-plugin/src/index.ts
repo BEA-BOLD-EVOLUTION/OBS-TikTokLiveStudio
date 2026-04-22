@@ -1,3 +1,4 @@
+import { pathToFileURL } from 'node:url';
 import {
   ConfigNotFoundError,
   ConfigParseError,
@@ -49,6 +50,11 @@ export function runPluginScaffold(options: RunPluginScaffoldOptions = {}): void 
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+export function isMainModule(moduleUrl: string, argv1: string | undefined): boolean {
+  if (!argv1) return false;
+  return moduleUrl === pathToFileURL(argv1).href;
+}
+
+if (isMainModule(import.meta.url, process.argv[1])) {
   runPluginScaffold();
 }

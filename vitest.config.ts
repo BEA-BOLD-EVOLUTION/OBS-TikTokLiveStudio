@@ -2,22 +2,33 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    environment: 'node',
-    environmentMatchGlobs: [
-      ['apps/web/**', 'happy-dom'],
-    ],
-    include: [
-      'apps/web/src/**/*.test.ts',
-      'packages/streamdeck-plugin/src/**/*.test.ts',
-      'config/**/*.test.ts',
+    projects: [
+      {
+        test: {
+          name: 'web',
+          include: ['apps/web/src/**/*.test.ts'],
+          environment: 'happy-dom',
+        },
+      },
+      {
+        test: {
+          name: 'streamdeck-plugin',
+          include: ['packages/streamdeck-plugin/src/**/*.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
+          name: 'config',
+          include: ['config/**/*.test.ts'],
+          environment: 'node',
+        },
+      },
     ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      include: [
-        'apps/web/src/**/*.ts',
-        'packages/streamdeck-plugin/src/**/*.ts',
-      ],
+      include: ['apps/web/src/**/*.ts', 'packages/streamdeck-plugin/src/**/*.ts'],
       exclude: [
         '**/*.test.ts',
         '**/*.d.ts',
