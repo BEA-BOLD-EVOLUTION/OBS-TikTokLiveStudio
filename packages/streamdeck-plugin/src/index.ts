@@ -1,19 +1,54 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import {
+  ConfigNotFoundError,
+  ConfigParseError,
+  ConfigReadError,
+  ConfigValidationError,
+  defaultConfigPath,
+  loadLinks,
+  type LoadLinksDeps,
+} from './links.js';
 
-const rootConfigPath = join(process.cwd(), '..', '..', 'config', 'streamdeck-links.example.json');
+export interface RunPluginScaffoldOptions {
+  configPath?: string;
+  logger?: Pick<Console, 'log' | 'warn'>;
+  deps?: LoadLinksDeps;
+}
 
-try {
-  const content = readFileSync(rootConfigPath, 'utf-8');
-  const links = JSON.parse(content) as {
-    profileName: string;
-    buttons: Array<{ key: string; action: string; scene: string }>;
-  };
+export function runPluginScaffold(options: RunPluginScaffoldOptions = {}): void {
+  const configPath = options.configPath ?? defaultConfigPath();
+  const logger = options.logger ?? console;
 
-  console.log('Stream Deck plugin scaffold is running.');
-  console.log(`Profile: ${links.profileName}`);
-  console.log(`Mapped buttons: ${links.buttons.length}`);
-} catch {
-  console.log('Stream Deck plugin scaffold is running.');
-  console.log('Config not found yet. Create config/streamdeck-links.example.json at repo root.');
+  logger.log('Stream Deck plugin scaffold is running.');
+  try {
+    const links = loadLinks(configPath, options.deps);
+    logger.log(`Profile: ${links.profileName}`);
+    logger.log(`Mapped buttons: ${links.buttons.length}`);
+  } catch (error) {
+    if (error instanceof ConfigNotFoundError) {
+      logger.log(`Config not found yet. Create ${configPath} at repo root.`);
+      return;
+    }
+    if (error instanceof ConfigParseError) {
+      logger.warn(`Config at ${configPath} is not valid JSON. Fix the file and retry.`);
+      return;
+    }
+    if (error instanceof ConfigValidationError) {
+      logger.warn(`Config at ${configPath} is invalid:`);
+      for (const issue of error.issues) {
+        logger.warn(`  - ${issue}`);
+      }
+      return;
+    }
+    if (error instanceof ConfigReadError) {
+      logger.warn(
+        `Could not read ${configPath}: ${(error.cause as Error)?.message ?? 'unknown error'}`,
+      );
+      return;
+    }
+    throw error;
+  }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runPluginScaffold();
 }
