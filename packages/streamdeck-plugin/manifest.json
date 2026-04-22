@@ -1,0 +1,17 @@
+{
+  "Name": "OBS Scene Linker",
+  "Version": "0.1.0",
+  "Author": "You",
+  "CodePath": "dist/index.js",
+  "Description": "Scaffold plugin to keep Stream Deck buttons mapped to OBS scenes and sources.",
+  "Actions": [
+    {
+      "UUID": "com.obs.tiktok.streamdeck.switchscene",
+      "Name": "Switch Scene",
+      "Tooltip": "Switch to a mapped OBS scene",
+      "Controllers": [
+        "Keypad"
+      ]
+    }
+  ]
+}

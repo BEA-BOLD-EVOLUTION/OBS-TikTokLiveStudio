@@ -1,0 +1,13 @@
+{
+  "name": "@obs-tiktok/streamdeck-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsx": "4.19.2"
+  }
+}

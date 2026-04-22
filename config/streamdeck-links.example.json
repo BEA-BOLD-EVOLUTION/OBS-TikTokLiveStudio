@@ -1,0 +1,20 @@
+{
+  "profileName": "Main Profile",
+  "buttons": [
+    {
+      "key": "1",
+      "action": "switch_scene",
+      "scene": "SCN_STARTING"
+    },
+    {
+      "key": "2",
+      "action": "switch_scene",
+      "scene": "SCN_LIVE"
+    },
+    {
+      "key": "3",
+      "action": "switch_scene",
+      "scene": "SCN_BRB"
+    }
+  ]
+}

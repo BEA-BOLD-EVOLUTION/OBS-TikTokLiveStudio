@@ -1,0 +1,36 @@
+{
+  "studio": "TikTok Live Studio",
+  "obsProfile": "Main Stream",
+  "namingConvention": {
+    "scenePrefix": "SCN_",
+    "sourcePrefix": "SRC_"
+  },
+  "scenes": [
+    {
+      "id": "SCN_STARTING",
+      "label": "Starting Soon",
+      "sources": [
+        "SRC_BG_LOOP",
+        "SRC_COUNTDOWN",
+        "SRC_LOGO"
+      ]
+    },
+    {
+      "id": "SCN_LIVE",
+      "label": "Live Main",
+      "sources": [
+        "SRC_CAM_MAIN",
+        "SRC_CHAT_OVERLAY",
+        "SRC_ALERTS"
+      ]
+    },
+    {
+      "id": "SCN_BRB",
+      "label": "Be Right Back",
+      "sources": [
+        "SRC_BG_LOOP",
+        "SRC_BRB_TEXT"
+      ]
+    }
+  ]
+}
