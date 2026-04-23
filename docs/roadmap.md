@@ -145,10 +145,18 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 **Advanced features:**
 
 - **Transition library management (20+ videos):**
+  - **Visual Organization (solves OBS's lack of organization features):**
+    - Color coding: Assign colors to transitions (e.g., blue=topic change, green=sponsor, red=urgent)
+    - Custom collections/groups: Create playlists like "Gaming Stream", "Tutorial Stream", "Just Chatting"
+    - **Editable section titles:** Rename categories to match your workflow (e.g., "Topic Changes" → "Chapter Breaks", "Sponsors" → "Brand Spots")
+    - Visual tags with color badges (smooth, fast, branded, seasonal, etc.)
+    - Emoji labels for quick visual scanning (🎮 gaming, 💰 sponsor, ☕ break)
+    - Grid view (thumbnails) vs List view (compact details)
+    - Filter by multiple criteria: color + category + tags
   - Category system: Topic Changes, Sponsors, BRB, Intros, Outros, Custom
   - Favorites/pinned transitions for quick access
   - Search by name, description, tags, or duration
-  - Sort by: most used, recently added, duration, alphabetical
+  - Sort by: most used, recently added, duration, alphabetical, color
   - Thumbnail preview grid (auto-generate from video midpoint frame)
   - Bulk import from folder (drag-and-drop multiple .mp4 files)
   - Folder-based organization mirrors file structure
@@ -180,7 +188,10 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "duration": 3,
             "description": "Liquid morph with particle swirl",
             "tags": ["smooth", "elegant"],
+            "color": "#3B82F6",
+            "emoji": "🌊",
             "favorite": true,
+            "collections": ["Gaming Stream", "Professional"],
             "returnToPrevious": true
           },
           {
@@ -190,7 +201,10 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "duration": 2,
             "description": "Fast digital distortion",
             "tags": ["fast", "tech"],
+            "color": "#8B5CF6",
+            "emoji": "⚡",
             "favorite": false,
+            "collections": ["Gaming Stream"],
             "returnToPrevious": true
           }
         ]
@@ -205,7 +219,10 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "duration": 5,
             "description": "Glitch transition with Brand A logo",
             "tags": ["sponsor", "branded"],
+            "color": "#10B981",
+            "emoji": "💰",
             "favorite": true,
+            "collections": ["Sponsored Streams"],
             "returnToPrevious": false,
             "nextScene": "SCN_LIVE"
           }
@@ -221,7 +238,10 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "duration": 4,
             "description": "Warp effect with countdown timer",
             "tags": ["break", "countdown"],
+            "color": "#F59E0B",
+            "emoji": "☕",
             "favorite": true,
+            "collections": ["Just Chatting", "Long Streams"],
             "returnToPrevious": true
           }
         ]
@@ -255,7 +275,13 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 - OBS WebSocket `MediaInputPlaybackEnded` event triggers scene switch back
 - State machine tracks: previous scene → transition → next scene
 - Stream Deck buttons trigger by transition ID
-- Web UI shows transition preview thumbnails + duration
+- **Web UI library manager:**
+  - Inline editing for category names (click to rename)
+  - Color picker for each transition
+  - Emoji selector dropdown
+  - Drag-and-drop to reorder categories and transitions
+  - Transition preview thumbnails + duration
+  - Multi-select for batch operations (assign color, add to collection, delete)
 - Support for common AI video formats: MP4 (H.264/H.265), WebM, MOV
 - Auto-detect video properties on import (resolution, fps, codec)
 - Validate video duration matches config or auto-update
