@@ -19,13 +19,21 @@
     "build": "npm run build --workspace @obs-tiktok/web && npm run build --workspace @obs-tiktok/streamdeck-plugin",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "8.31.0",
-    "@typescript-eslint/parser": "8.31.0",
-    "eslint": "9.24.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.0",
+    "@typescript-eslint/parser": "^8.59.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^10.2.1",
+    "happy-dom": "^20.9.0",
     "prettier": "3.5.3",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vite": "^8.0.9",
+    "vitest": "^4.1.5"
   }
 }
