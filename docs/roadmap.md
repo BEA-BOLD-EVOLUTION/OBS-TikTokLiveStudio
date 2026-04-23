@@ -145,16 +145,24 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 **Advanced features:**
 
 - **Transition library management (20+ videos):**
+  - **Section-based organization:**
+    - **Default sections provided:** Topic Changes, Sponsors, BRB, Quick Reactions, Intros, Outros
+      - **Topic Changes:** Scene-to-scene transitions (morphs, glitches, wipes)
+      - **Sponsors:** Brand-specific transitions with logos/animations
+      - **BRB (Be Right Back):** Break transitions with countdown/messages
+      - **Quick Reactions:** Ultra-short (0.3-1.5 sec) instant-impact moments (jump scares, flash cuts)
+      - **Intros:** Stream opening sequences
+      - **Outros:** Stream ending sequences
+    - **Add unlimited custom sections:** Create your own categories (e.g., "Chapter Breaks", "Guest Arrivals", "Poll Results", "Donation Alerts", "Seasonal", "Branded Content")
+    - **Each section is distinct:** Independent management, colors, favorites, Stream Deck pages
+    - **Editable section titles:** Rename any section to match your workflow
   - **Visual Organization (solves OBS's lack of organization features):**
     - Color coding: Assign colors to transitions (e.g., blue=topic change, green=sponsor, red=urgent)
     - Custom collections/groups: Create playlists like "Gaming Stream", "Tutorial Stream", "Just Chatting"
-    - **Editable section titles:** Rename categories to match your workflow (e.g., "Topic Changes" → "Chapter Breaks", "Sponsors" → "Brand Spots")
     - Visual tags with color badges (smooth, fast, branded, seasonal, etc.)
     - Emoji labels for quick visual scanning (🎮 gaming, 💰 sponsor, ☕ break)
     - Grid view (thumbnails) vs List view (compact details)
     - Filter by multiple criteria: color + category + tags
-  - Category system: Topic Changes, Sponsors, BRB, Quick Reactions, Intros, Outros, Custom
-    - **Quick Reactions** category: Ultra-short transitions (0.3-1.5 sec) for instant-impact moments - creators import their own jump scares, flash cuts, and reaction triggers
   - Favorites/pinned transitions for quick access
   - Search by name, description, tags, or duration
   - Sort by: most used, recently added, duration, alphabetical, color
@@ -247,6 +255,26 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "returnToPrevious": true
           }
         ]
+      },
+      {
+        "name": "Guest Arrivals",
+        "custom": true,
+        "transitions": [
+          {
+            "id": "TRN_GUEST_ARRIVAL",
+            "name": "Guest Spotlight",
+            "video": "transitions/custom/guest-arrival.mp4",
+            "duration": 3.5,
+            "description": "Spotlight animation for co-host arrival",
+            "tags": ["guest", "collab", "custom"],
+            "color": "#A78BFA",
+            "emoji": "👋",
+            "favorite": true,
+            "collections": ["Collab Streams"],
+            "returnToPrevious": false,
+            "nextScene": "SCN_MULTI_CAM"
+          }
+        ]
       }
     ],
     "settings": {
@@ -254,6 +282,15 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
       "autoGenerateThumbnails": true,
       "thumbnailTimestamp": "midpoint",
       "maxFavorites": 12,
+      "enabledSections": [
+        "Topic Changes",
+        "Sponsors",
+        "BRB",
+        "Quick Reactions",
+        "Intros",
+        "Outros",
+        "Guest Arrivals"
+      ],
       "streamDeckPages": [
         {
           "page": 1,
@@ -278,12 +315,20 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 - State machine tracks: previous scene → transition → next scene
 - Stream Deck buttons trigger by transition ID
 - **Web UI library manager:**
-  - Inline editing for category names (click to rename)
-  - Color picker for each transition
-  - Emoji selector dropdown
-  - Drag-and-drop to reorder categories and transitions
-  - Transition preview thumbnails + duration
-  - Multi-select for batch operations (assign color, add to collection, delete)
+  - **Section management:**
+    - Create new sections (+ Add Section button)
+    - Delete custom sections (default sections cannot be deleted)
+    - Reorder sections (drag-and-drop)
+    - Rename any section (click to edit inline)
+    - Assign section-level color themes
+  - **Transition management:**
+    - Inline editing for transition names
+    - Color picker for each transition
+    - Emoji selector dropdown
+    - Drag-and-drop to reorder transitions within sections
+    - Move transitions between sections
+    - Transition preview thumbnails + duration
+    - Multi-select for batch operations (assign color, add to collection, delete)
 - Support for common AI video formats: MP4 (H.264/H.265), WebM, MOV
 - Auto-detect video properties on import (resolution, fps, codec)
 - Validate video duration matches config or auto-update
