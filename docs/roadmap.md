@@ -725,29 +725,44 @@ Auto-load scenes, sources, and settings per schedule.
 
 ### 👥 Guest Management
 
-**Multi-host streaming:**
+**TikTok Live Cohost Tracking:**
 
-- Guest join workflow: Add video call source (Zoom, Discord, etc.)
-- Auto-resize main webcam to PiP
-- Guest leaves → restore full-screen layout
-- Individual audio controls per guest
+When creators cohost with other TikTok streamers (using TikTok's native cohost feature), this tool helps track and manage those collaborations.
 
 **Quick Cohost Capture:**
 
-- One-click logging during live stream when cohosting on TikTok
+- One-click logging during live stream when cohosting on TikTok Live
 - Capture fields:
   - TikTok username (required)
   - Join timestamp (auto-captured)
   - Leave timestamp (optional, manual or auto)
-  - Stream topic/notes (optional freeform text)
+  - Quick notes with preset tags (editable)
 - Quick access: keyboard shortcut (Ctrl+Shift+C) or floating capture button during live
-- Cohost history log:
-  - Searchable list of all past cohosts
-  - Filter by date range, username
-  - Export to CSV for analytics/credits
-  - Show cohost frequency count (e.g., "5 streams with @username")
+
+**Quick Notes Presets:**
+
+- Default quick-select tags (all editable):
+  - ⭐ "Great cohost - will match again"
+  - 🚫 "Block - do not match again"
+  - 👍 "Good energy - would stream again"
+  - 😐 "Meh - neutral experience"
+  - 💰 "Business/promo focused"
+  - 🎮 "Similar niche/content"
+  - 💬 "Great chat engagement"
+  - 📝 Custom note (freeform text)
+- Click to add multiple tags per cohost
+- Edit/rename any preset tag to match your workflow
+- Add unlimited custom preset tags
+
+**Cohost History Log:**
+
+- Searchable list of all past cohosts
+- Filter by date range, username, tags
+- Export to CSV for analytics/credits
+- Show cohost frequency count (e.g., "5 streams with @username")
+- Flag blocked cohosts with visual indicator
 - Auto-populate lower third with cohost username when captured
-- Post-stream summary: list of all cohosts from that session
+- Post-stream summary: list of all cohosts from that session with notes
 
 ### 📱 Mobile Control
 
