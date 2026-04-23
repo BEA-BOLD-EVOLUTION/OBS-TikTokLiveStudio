@@ -172,9 +172,9 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const existingItem = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
-        (item) => item.sourceName === sourceName,
-      );
+      const existingItem = (
+        sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>
+      ).find((item) => item.sourceName === sourceName);
 
       if (existingItem) {
         // Update file path if source exists
@@ -200,9 +200,9 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const newItem = (updatedSceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
-        (item) => item.sourceName === sourceName,
-      );
+      const newItem = (
+        updatedSceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>
+      ).find((item) => item.sourceName === sourceName);
 
       if (!newItem) {
         throw new Error('Failed to create media source');

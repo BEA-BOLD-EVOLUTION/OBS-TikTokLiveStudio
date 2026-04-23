@@ -23,7 +23,16 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --max-warnings=0"
+    ]
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.59.0",
@@ -31,6 +40,8 @@
     "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^10.2.1",
     "happy-dom": "^20.9.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "3.8.3",
     "typescript": "6.0.3",
     "vite": "^8.0.9",

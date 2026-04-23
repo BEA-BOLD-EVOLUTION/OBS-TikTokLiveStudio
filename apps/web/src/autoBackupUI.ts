@@ -43,7 +43,6 @@ export class AutoBackupUI {
   private records: BackupRecord[] = [];
   private currentState: BackupState | null = null;
   private durationInterval: ReturnType<typeof setInterval> | null = null;
-  private obsController: OBSController | null = null;
   constructor(containerId: string) {
     this.containerId = containerId;
     this.init();
@@ -91,8 +90,8 @@ export class AutoBackupUI {
   }
 
   public setOBSController(obs: OBSController): void {
-    this.obsController = obs;
     console.log('OBS controller set for Auto Backup UI');
+    autoBackupEngine.setOBSController(obs);
   }
 
   private async loadData(): Promise<void> {

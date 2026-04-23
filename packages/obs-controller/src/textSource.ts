@@ -30,9 +30,9 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const existingItem = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
-        (item) => item.sourceName === settings.sourceName,
-      );
+      const existingItem = (
+        sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>
+      ).find((item) => item.sourceName === settings.sourceName);
 
       if (!existingItem) {
         // Create new text source (GDI+ Text in OBS)
@@ -40,14 +40,16 @@ export class TextSourceController {
           sceneName: this.sceneName,
           inputName: settings.sourceName,
           inputKind: 'text_gdiplus_v2', // GDI+ Text source for Windows
-          inputSettings: this.buildTextSettings(settings) as Record<string, unknown>,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          inputSettings: this.buildTextSettings(settings) as any,
           sceneItemEnabled: settings.visible,
         });
       } else {
         // Update existing source
         await this.obs.call('SetInputSettings', {
           inputName: settings.sourceName,
-          inputSettings: this.buildTextSettings(settings) as Record<string, unknown>,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          inputSettings: this.buildTextSettings(settings) as any,
         });
 
         // Update visibility
@@ -72,9 +74,9 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
-        (item) => item.sourceName === sourceName,
-      );
+      const item = (
+        sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>
+      ).find((item) => item.sourceName === sourceName);
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
@@ -98,9 +100,9 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
-        (item) => item.sourceName === sourceName,
-      );
+      const item = (
+        sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>
+      ).find((item) => item.sourceName === sourceName);
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
@@ -147,7 +149,9 @@ export class TextSourceController {
   /**
    * Build OBS text source settings
    */
-  private buildTextSettings(settings: OBSTextSourceSettings): Record<string, unknown> {
+  private buildTextSettings(
+    settings: OBSTextSourceSettings,
+  ): Record<string, string | number | boolean | { face: string; size: number; flags: number }> {
     return {
       text: settings.text,
       font: {
