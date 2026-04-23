@@ -439,6 +439,74 @@ export function getSplitIntervalDisplayName(interval: SplitInterval): string {
 }
 
 /**
+ * Get status color for UI badges
+ */
+export function getStatusColor(status: UploadStatus): string {
+  switch (status) {
+    case 'pending':
+      return '#6b7280'; // Gray
+    case 'uploading':
+      return '#3B82F6'; // Blue
+    case 'completed':
+      return '#10b981'; // Green
+    case 'failed':
+      return '#ef4444'; // Red
+    case 'paused':
+      return '#f59e0b'; // Yellow
+    default:
+      return '#9ca3af'; // Light gray
+  }
+}
+
+/**
+ * Get location type icon
+ */
+export function getLocationTypeIcon(type: LocationType): string {
+  switch (type) {
+    case 'local':
+      return '📁';
+    case 'network':
+      return '🌐';
+    case 'cloud':
+      return '☁️';
+    default:
+      return '❓';
+  }
+}
+
+/**
+ * Get cloud provider icon
+ */
+export function getCloudProviderIcon(provider: CloudProvider): string {
+  switch (provider) {
+    case 'onedrive':
+      return '☁️';
+    case 'dropbox':
+      return '📦';
+    case 'googledrive':
+      return '🔷';
+    default:
+      return '☁️';
+  }
+}
+
+/**
+ * Get cloud provider brand color
+ */
+export function getCloudProviderColor(provider: CloudProvider): string {
+  switch (provider) {
+    case 'onedrive':
+      return '#0078d4'; // Microsoft blue
+    case 'dropbox':
+      return '#0061ff'; // Dropbox blue
+    case 'googledrive':
+      return '#4285f4'; // Google blue
+    default:
+      return '#3B82F6'; // Default blue
+  }
+}
+
+/**
  * Validate backup location path
  */
 export function isValidLocationPath(path: string, type: LocationType): boolean {

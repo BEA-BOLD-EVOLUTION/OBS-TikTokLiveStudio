@@ -15,6 +15,8 @@ import { AdaptiveQualityUI } from './adaptiveQualityUI.js';
 import { adaptiveQualityEngine } from './adaptiveQualityEngine.js';
 import { AudioDuckingUI } from './audioDuckingUI.js';
 import { audioDuckingEngine } from './audioDuckingEngine.js';
+import { AutoBackupUI } from './autoBackupUI.js';
+import { autoBackupEngine } from './autoBackupEngine.js';
 import './transitionLibrary.css';
 import './goLive.css';
 import './lowerThirds.css';
@@ -23,6 +25,7 @@ import './sceneRecommendation.css';
 import './scheduledWorkflow.css';
 import './adaptiveQuality.css';
 import './audioDucking.css';
+import './autoBackup.css';
 
 bootstrap();
 
@@ -121,6 +124,17 @@ if (appContainer) {
 
   // Connect audio ducking engine to OBS
   audioDuckingEngine.setOBSController(obsUI.getController());
+
+  // Add Auto-Backup Recordings (Phase 3 - Intelligent Automation)
+  const autoBackupContainer = document.createElement('div');
+  autoBackupContainer.id = 'auto-backup-container';
+  appContainer.appendChild(autoBackupContainer);
+
+  const autoBackupUI = new AutoBackupUI('auto-backup-container');
+  autoBackupUI.setOBSController(obsUI.getController());
+
+  // Connect auto-backup engine to OBS
+  autoBackupEngine.setOBSController(obsUI.getController());
 }
 
-console.log('Guided web UI loaded: creator-focused setup experience ready with OBS integration, Go Live Sequence, Lower Thirds, AI Transition Sequences, Cohost Tracking OCR, Scene Recommendations, Scheduled Workflows, Adaptive Quality, and Audio Ducking.');
+console.log('Guided web UI loaded: creator-focused setup experience ready with OBS integration, Go Live Sequence, Lower Thirds, AI Transition Sequences, Cohost Tracking OCR, Scene Recommendations, Scheduled Workflows, Adaptive Quality, Audio Ducking, and Auto-Backup Recordings.');
