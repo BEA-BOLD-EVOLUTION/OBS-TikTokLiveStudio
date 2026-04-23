@@ -731,15 +731,24 @@ When creators cohost with other TikTok streamers (using TikTok's native cohost f
 
 **Quick Cohost Capture:**
 
-- One-click logging during live stream when cohosting on TikTok Live
+- **One-click OCR capture** (automated screen reading):
+  - Single button press (Ctrl+Shift+C) or Stream Deck button
+  - System performs OCR on predefined screen region where TikTok displays cohost username
+  - Auto-extracts username from screen (no manual typing needed)
+  - Creator sets up screen region once during initial configuration:
+    - "Capture username region" setup wizard
+    - Draw bounding box around where TikTok shows cohost name
+    - Save region coordinates for future captures
+    - Support multiple monitor setups
+  - Fallback: If OCR fails or low confidence, show quick manual entry dialog
 - Capture fields:
-  - TikTok username (required)
+  - TikTok username (auto-captured via OCR or manual entry)
   - Join timestamp (auto-captured)
   - Leave timestamp (optional, manual or auto)
   - Quick notes with preset tags (editable)
-- Quick access: keyboard shortcut (Ctrl+Shift+C) or floating capture button during live
+- Quick access: keyboard shortcut (Ctrl+Shift+C), Stream Deck button, or floating capture button during live
 - **Returning cohost detection:**
-  - As you type username, system checks history
+  - After OCR capture, system checks history
   - Shows alert: "You've cohosted with @username before!"
   - Displays previous cohost count: "3 previous streams"
   - Shows last cohost date: "Last stream: 2 weeks ago"
