@@ -138,18 +138,25 @@ export async function getAllWorkflows(): Promise<ScheduledWorkflow[]> {
     const request = store.getAll();
 
     request.onsuccess = () => {
-      const workflows = request.result.map((w: Omit<ScheduledWorkflow, 'createdAt' | 'lastModified' | 'lastExecuted' | 'nextExecution'> & {
-        createdAt: string;
-        lastModified: string;
-        lastExecuted?: string;
-        nextExecution?: string;
-      }) => ({
-        ...w,
-        createdAt: new Date(w.createdAt),
-        lastModified: new Date(w.lastModified),
-        lastExecuted: w.lastExecuted ? new Date(w.lastExecuted) : undefined,
-        nextExecution: w.nextExecution ? new Date(w.nextExecution) : undefined,
-      }));
+      const workflows = request.result.map(
+        (
+          w: Omit<
+            ScheduledWorkflow,
+            'createdAt' | 'lastModified' | 'lastExecuted' | 'nextExecution'
+          > & {
+            createdAt: string;
+            lastModified: string;
+            lastExecuted?: string;
+            nextExecution?: string;
+          },
+        ) => ({
+          ...w,
+          createdAt: new Date(w.createdAt),
+          lastModified: new Date(w.lastModified),
+          lastExecuted: w.lastExecuted ? new Date(w.lastExecuted) : undefined,
+          nextExecution: w.nextExecution ? new Date(w.nextExecution) : undefined,
+        }),
+      );
 
       resolve(workflows);
     };
@@ -226,9 +233,7 @@ export async function recordExecution(execution: WorkflowExecution): Promise<voi
 /**
  * Update workflow after execution
  */
-export async function updateWorkflowAfterExecution(
-  id: string,
-): Promise<void> {
+export async function updateWorkflowAfterExecution(id: string): Promise<void> {
   // success and error parameters removed as they're not used in current implementation
   const workflow = await getWorkflow(id);
   if (!workflow) return;

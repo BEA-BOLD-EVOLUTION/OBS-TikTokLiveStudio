@@ -139,11 +139,13 @@ export async function getAllEvents(): Promise<DuckingEvent[]> {
   const tx = db.transaction(EVENTS_STORE, 'readonly');
   const store = tx.objectStore(EVENTS_STORE);
 
-  const events = await new Promise<Array<DuckingEvent & { timestamp: string }>>((resolve, reject) => {
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  const events = await new Promise<Array<DuckingEvent & { timestamp: string }>>(
+    (resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    },
+  );
 
   db.close();
   return events.map(deserializeEvent);
@@ -232,11 +234,13 @@ export async function getAudioSource(id: string): Promise<OBSAudioSource | null>
   const tx = db.transaction(SOURCES_STORE, 'readonly');
   const store = tx.objectStore(SOURCES_STORE);
 
-  const data = await new Promise<OBSAudioSource & { lastDucked: string | null } | undefined>((resolve, reject) => {
-    const request = store.get(id);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  const data = await new Promise<(OBSAudioSource & { lastDucked: string | null }) | undefined>(
+    (resolve, reject) => {
+      const request = store.get(id);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    },
+  );
 
   db.close();
   return data ? deserializeSource(data) : null;
@@ -250,11 +254,13 @@ export async function getAllAudioSources(): Promise<OBSAudioSource[]> {
   const tx = db.transaction(SOURCES_STORE, 'readonly');
   const store = tx.objectStore(SOURCES_STORE);
 
-  const sources = await new Promise<Array<OBSAudioSource & { lastDucked: string | null }>>((resolve, reject) => {
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  const sources = await new Promise<Array<OBSAudioSource & { lastDucked: string | null }>>(
+    (resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    },
+  );
 
   db.close();
   return sources.map(deserializeSource);
@@ -325,11 +331,13 @@ export async function getVADConfig(): Promise<VADConfig> {
   const tx = db.transaction(CONFIG_STORE, 'readonly');
   const store = tx.objectStore(CONFIG_STORE);
 
-  const data = await new Promise<{ key: string; value: VADConfig } | undefined>((resolve, reject) => {
-    const request = store.get('vadConfig');
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  const data = await new Promise<{ key: string; value: VADConfig } | undefined>(
+    (resolve, reject) => {
+      const request = store.get('vadConfig');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    },
+  );
 
   db.close();
   return data?.value || DEFAULT_VAD_CONFIG;
@@ -360,11 +368,13 @@ export async function getDuckingConfig(): Promise<DuckingConfig> {
   const tx = db.transaction(CONFIG_STORE, 'readonly');
   const store = tx.objectStore(CONFIG_STORE);
 
-  const data = await new Promise<{ key: string; value: DuckingConfig } | undefined>((resolve, reject) => {
-    const request = store.get('duckingConfig');
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+  const data = await new Promise<{ key: string; value: DuckingConfig } | undefined>(
+    (resolve, reject) => {
+      const request = store.get('duckingConfig');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    },
+  );
 
   db.close();
   return data?.value || DEFAULT_DUCKING_CONFIG;

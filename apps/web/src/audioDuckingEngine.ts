@@ -12,10 +12,7 @@ import type {
   DuckingEvent,
   AudioDuckingState,
 } from './audioDuckingTypes.js';
-import {
-  DEFAULT_AUDIO_DUCKING_STATE,
-  generateEventId,
-} from './audioDuckingTypes.js';
+import { DEFAULT_AUDIO_DUCKING_STATE, generateEventId } from './audioDuckingTypes.js';
 import {
   getVADConfig,
   getDuckingConfig,

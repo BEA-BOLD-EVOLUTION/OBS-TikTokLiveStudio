@@ -170,7 +170,6 @@ After opening the dashboard in your browser:
   - In OBS, click **Tools** at the top
   - Click **WebSocket Server Settings**
   - Make sure there's a checkmark next to "Enable WebSocket server"
-  
 - **"Port already in use"**: This is normal. The system will automatically find an available port and show you a different number like `http://localhost:5174/` or `http://localhost:5175/`. Just use whatever URL it shows you.
 
 - **"npm: command not found"** or **"npm is not recognized"**: This means Node.js isn't installed correctly.
@@ -1031,7 +1030,6 @@ When creators cohost with other TikTok streamers (using TikTok's native cohost f
   - Windows: `.exe` installer that handles everything
   - macOS: `.dmg` with drag-to-install + auto-setup
   - Linux: `.AppImage` or `.deb` package
-  
 - **Installation script:**
   - `install.sh` / `install.ps1` that runs all setup commands automatically
   - Checks for Node.js, installs if missing
@@ -1063,7 +1061,7 @@ When creators cohost with other TikTok streamers (using TikTok's native cohost f
   - Check if OBS WebSocket is enabled → auto-enable via API if possible
   - Test connection → show success/failure with helpful next steps
   - Optional: Import existing OBS scenes automatically
-  
+
 **Why This Matters:**
 
 - Current setup requires: command line knowledge, git, Node.js, manual configuration

@@ -5,11 +5,7 @@
  */
 
 import type { OBSController } from '@obs-tiktok/obs-controller';
-import type {
-  OBSAudioSource,
-  DuckingEvent,
-  AudioDuckingState,
-} from './audioDuckingTypes.js';
+import type { OBSAudioSource, DuckingEvent, AudioDuckingState } from './audioDuckingTypes.js';
 import {
   generateSourceId,
   getStateColor,

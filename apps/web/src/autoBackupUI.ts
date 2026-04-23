@@ -473,7 +473,9 @@ export class AutoBackupUI {
         0,
       ),
       pendingUploads: this.records.reduce(
-        (sum, r) => sum + r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
+        (sum, r) =>
+          sum +
+          r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
         0,
       ),
     };

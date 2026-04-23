@@ -2,9 +2,7 @@
  * Scene Recommendation UI - Display recommendations and analytics
  */
 
-import type {
-  RecommendationUIState,
-} from './sceneRecommendationTypes.js';
+import type { RecommendationUIState } from './sceneRecommendationTypes.js';
 import { formatDuration } from './sceneRecommendationTypes.js';
 import { recommendationEngine } from './sceneRecommendationEngine.js';
 import { calculateAnalytics, getConfig } from './sceneRecommendationStorage.js';

@@ -21,11 +21,7 @@ import {
   validateWorkflow,
   formatDuration,
 } from './scheduledWorkflowTypes.js';
-import {
-  getAllWorkflows,
-  saveWorkflow,
-  deleteWorkflow,
-} from './scheduledWorkflowStorage.js';
+import { getAllWorkflows, saveWorkflow, deleteWorkflow } from './scheduledWorkflowStorage.js';
 import { workflowScheduler } from './scheduledWorkflowEngine.js';
 
 export class ScheduledWorkflowUI {

@@ -3,7 +3,7 @@
  */
 
 import OBSWebSocket from 'obs-websocket-js';
-import type { OBSTextSourceSettings } from '../../apps/web/src/lowerThirdsTypes';
+import type { OBSTextSourceSettings } from '../../../apps/web/src/lowerThirdsTypes.js';
 
 export class TextSourceController {
   private obs: OBSWebSocket;
@@ -30,8 +30,8 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const existingItem = sceneItems.sceneItems.find(
-        (item: { sourceName: string; sceneItemId: number }) => item.sourceName === settings.sourceName,
+      const existingItem = (sceneItems.sceneItems as any[]).find(
+        (item: any) => item.sourceName === settings.sourceName,
       );
 
       if (!existingItem) {
@@ -40,20 +40,20 @@ export class TextSourceController {
           sceneName: this.sceneName,
           inputName: settings.sourceName,
           inputKind: 'text_gdiplus_v2', // GDI+ Text source for Windows
-          inputSettings: this.buildTextSettings(settings),
+          inputSettings: this.buildTextSettings(settings) as any,
           sceneItemEnabled: settings.visible,
         });
       } else {
         // Update existing source
         await this.obs.call('SetInputSettings', {
           inputName: settings.sourceName,
-          inputSettings: this.buildTextSettings(settings),
+          inputSettings: this.buildTextSettings(settings) as any,
         });
 
         // Update visibility
         await this.obs.call('SetSceneItemEnabled', {
           sceneName: this.sceneName,
-          sceneItemId: existingItem.sceneItemId,
+          sceneItemId: existingItem.sceneItemId as number,
           sceneItemEnabled: settings.visible,
         });
       }
@@ -72,12 +72,14 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = sceneItems.sceneItems.find((item: { sourceName: string; sceneItemId: number }) => item.sourceName === sourceName);
+      const item = (sceneItems.sceneItems as any[]).find(
+        (item: any) => item.sourceName === sourceName,
+      );
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
           sceneName: this.sceneName,
-          sceneItemId: item.sceneItemId,
+          sceneItemId: item.sceneItemId as number,
           sceneItemEnabled: true,
         });
       }
@@ -96,12 +98,14 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = sceneItems.sceneItems.find((item: { sourceName: string; sceneItemId: number }) => item.sourceName === sourceName);
+      const item = (sceneItems.sceneItems as any[]).find(
+        (item: any) => item.sourceName === sourceName,
+      );
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
           sceneName: this.sceneName,
-          sceneItemId: item.sceneItemId,
+          sceneItemId: item.sceneItemId as number,
           sceneItemEnabled: false,
         });
       }

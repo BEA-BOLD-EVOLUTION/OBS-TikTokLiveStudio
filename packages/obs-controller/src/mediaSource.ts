@@ -172,14 +172,14 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const existingItem = sceneItems.sceneItems.find(
-        (item: { sourceName: string }) => item.sourceName === sourceName,
+      const existingItem = (sceneItems.sceneItems as any[]).find(
+        (item: any) => item.sourceName === sourceName,
       );
 
       if (existingItem) {
         // Update file path if source exists
         await this.setFilePath(sourceName, filePath);
-        return existingItem.sceneItemId;
+        return existingItem.sceneItemId as number;
       }
 
       // Create new media source
@@ -200,15 +200,15 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const newItem = updatedSceneItems.sceneItems.find(
-        (item: { sourceName: string }) => item.sourceName === sourceName,
+      const newItem = (updatedSceneItems.sceneItems as any[]).find(
+        (item: any) => item.sourceName === sourceName,
       );
 
       if (!newItem) {
         throw new Error('Failed to create media source');
       }
 
-      return newItem.sceneItemId;
+      return newItem.sceneItemId as number;
     } catch (error) {
       const err = error as Error;
       throw new Error(`Failed to ensure media source "${sourceName}": ${err.message}`);

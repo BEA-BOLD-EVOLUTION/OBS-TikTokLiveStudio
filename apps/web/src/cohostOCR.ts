@@ -99,11 +99,17 @@ export async function processImageOCR(imageFile: File, region?: ImageRegion): Pr
     return {
       text: cleanedText,
       confidence: Math.round(confidence),
-      words: words.map((word: { text: string; confidence: number; bbox: { x0: number; y0: number; x1: number; y1: number } }) => ({
-        text: word.text,
-        confidence: Math.round(word.confidence),
-        bbox: word.bbox,
-      })),
+      words: words.map(
+        (word: {
+          text: string;
+          confidence: number;
+          bbox: { x0: number; y0: number; x1: number; y1: number };
+        }) => ({
+          text: word.text,
+          confidence: Math.round(word.confidence),
+          bbox: word.bbox,
+        }),
+      ),
     };
   } catch (error) {
     URL.revokeObjectURL(imageUrl);

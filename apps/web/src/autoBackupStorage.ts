@@ -179,7 +179,10 @@ function deserializeLocation(data: SerializedLocation): BackupLocation {
 /**
  * Serialize queue entry dates to ISO strings
  */
-function serializeQueueEntry(entry: UploadQueueEntry): Omit<UploadQueueEntry, 'nextRetryAt' | 'addedAt'> & {
+function serializeQueueEntry(entry: UploadQueueEntry): Omit<
+  UploadQueueEntry,
+  'nextRetryAt' | 'addedAt'
+> & {
   nextRetryAt: string;
   addedAt: string;
 } {
@@ -193,10 +196,12 @@ function serializeQueueEntry(entry: UploadQueueEntry): Omit<UploadQueueEntry, 'n
 /**
  * Deserialize queue entry ISO strings back to Date objects
  */
-function deserializeQueueEntry(data: Omit<UploadQueueEntry, 'nextRetryAt' | 'addedAt'> & {
-  nextRetryAt: string;
-  addedAt: string;
-}): UploadQueueEntry {
+function deserializeQueueEntry(
+  data: Omit<UploadQueueEntry, 'nextRetryAt' | 'addedAt'> & {
+    nextRetryAt: string;
+    addedAt: string;
+  },
+): UploadQueueEntry {
   return {
     ...data,
     nextRetryAt: new Date(data.nextRetryAt),

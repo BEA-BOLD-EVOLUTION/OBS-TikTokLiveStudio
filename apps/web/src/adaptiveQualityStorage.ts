@@ -213,14 +213,20 @@ export async function getAllAdjustments(): Promise<QualityAdjustment[]> {
 
     request.onsuccess = () => {
       const adjustments = request.result.map(
-        (a: QualityAdjustment & { timestamp: string; networkMetrics: NetworkMetrics & { timestamp: string } }) => ({
+        (
+          a: QualityAdjustment & {
+            timestamp: string;
+            networkMetrics: NetworkMetrics & { timestamp: string };
+          },
+        ) => ({
           ...a,
           timestamp: new Date(a.timestamp),
           networkMetrics: {
             ...a.networkMetrics,
             timestamp: new Date(a.networkMetrics.timestamp),
-        },
-      }));
+          },
+        }),
+      );
       resolve(adjustments);
     };
     request.onerror = () => reject(request.error);

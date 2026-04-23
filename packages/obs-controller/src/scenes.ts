@@ -12,9 +12,9 @@ export class SceneController {
    */
   async getScenes(): Promise<Scene[]> {
     const response = await this.obs.call('GetSceneList');
-    return response.scenes.map((scene) => ({
-      id: scene.sceneName,
-      name: scene.sceneName,
+    return (response.scenes as any[]).map((scene: any) => ({
+      id: scene.sceneName as string,
+      name: scene.sceneName as string,
     }));
   }
 
