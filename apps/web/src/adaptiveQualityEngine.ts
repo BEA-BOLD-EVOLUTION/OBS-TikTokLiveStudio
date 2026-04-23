@@ -28,6 +28,13 @@ import {
 } from './adaptiveQualityStorage.js';
 
 /**
+ * Callback function types
+ */
+type StateChangeCallback = (state: AdaptiveQualityState) => void;
+type AdjustmentCallback = (adjustment: QualityAdjustment) => void;
+type UnsubscribeFunction = () => void;
+
+/**
  * Adaptive Quality Engine
  * Singleton class that manages network monitoring and quality adaptation
  */
@@ -44,8 +51,8 @@ class AdaptiveQualityEngine {
   };
 
   private monitoringInterval: number | null = null;
-  private stateChangeCallbacks: Set<(state: AdaptiveQualityState) => void> = new Set();
-  private adjustmentCallbacks: Set<(adjustment: QualityAdjustment) => void> = new Set();
+  private stateChangeCallbacks = new Set<StateChangeCallback>();
+  private adjustmentCallbacks = new Set<AdjustmentCallback>();
 
   // Simulated network state for testing (in production, use real network monitoring)
   private simulatedBandwidth = 4500; // Start at High quality bandwidth
@@ -476,17 +483,23 @@ class AdaptiveQualityEngine {
   /**
    * Subscribe to state changes
    */
-  onStateChange(callback: (state: AdaptiveQualityState) => void): () => void {
+  onStateChange(callback: StateChangeCallback): UnsubscribeFunction {
     this.stateChangeCallbacks.add(callback);
-    return () => this.stateChangeCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.stateChangeCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**
    * Subscribe to quality adjustments
    */
-  onAdjustment(callback: (adjustment: QualityAdjustment) => void): () => void {
+  onAdjustment(callback: AdjustmentCallback): UnsubscribeFunction {
     this.adjustmentCallbacks.add(callback);
-    return () => this.adjustmentCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.adjustmentCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**

@@ -31,6 +31,14 @@ import {
 } from './autoBackupStorage.js';
 
 /**
+ * Callback function types
+ */
+type StateChangeCallback = (state: BackupState) => void;
+type UploadProgressCallback = (event: UploadProgressEvent) => void;
+type BackupCompleteCallback = (recordId: string, success: boolean) => void;
+type UnsubscribeFunction = () => void;
+
+/**
  * AutoBackupEngine - Singleton class for managing recording automation
  */
 export class AutoBackupEngine {
@@ -48,9 +56,9 @@ export class AutoBackupEngine {
   };
 
   // Callback subscriptions
-  private stateChangeCallbacks = new Set<(state: BackupState) => void>();
-  private uploadProgressCallbacks = new Set<(event: UploadProgressEvent) => void>();
-  private backupCompleteCallbacks = new Set<(recordId: string, success: boolean) => void>();
+  private stateChangeCallbacks = new Set<StateChangeCallback>();
+  private uploadProgressCallbacks = new Set<UploadProgressCallback>();
+  private backupCompleteCallbacks = new Set<BackupCompleteCallback>();
 
   constructor() {
     this.loadConfig();
@@ -642,25 +650,34 @@ export class AutoBackupEngine {
   /**
    * Subscribe to state changes
    */
-  onStateChange(callback: (state: BackupState) => void): () => void {
+  onStateChange(callback: StateChangeCallback): UnsubscribeFunction {
     this.stateChangeCallbacks.add(callback);
-    return () => this.stateChangeCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.stateChangeCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**
    * Subscribe to upload progress
    */
-  onUploadProgress(callback: (event: UploadProgressEvent) => void): () => void {
+  onUploadProgress(callback: UploadProgressCallback): UnsubscribeFunction {
     this.uploadProgressCallbacks.add(callback);
-    return () => this.uploadProgressCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.uploadProgressCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**
    * Subscribe to backup completion
    */
-  onBackupComplete(callback: (recordId: string, success: boolean) => void): () => void {
+  onBackupComplete(callback: BackupCompleteCallback): UnsubscribeFunction {
     this.backupCompleteCallbacks.add(callback);
-    return () => this.backupCompleteCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.backupCompleteCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**

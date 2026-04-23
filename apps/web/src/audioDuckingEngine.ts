@@ -25,6 +25,13 @@ import {
 } from './audioDuckingStorage.js';
 
 /**
+ * Callback function types
+ */
+type StateChangeCallback = (state: AudioDuckingState) => void;
+type EventCallback = (event: DuckingEvent) => void;
+type UnsubscribeFunction = () => void;
+
+/**
  * Audio Ducking Engine Class
  */
 export class AudioDuckingEngine {
@@ -46,8 +53,8 @@ export class AudioDuckingEngine {
   private monitoringRAF: number | null = null;
 
   // Callbacks
-  private stateChangeCallbacks = new Set<(state: AudioDuckingState) => void>();
-  private eventCallbacks = new Set<(event: DuckingEvent) => void>();
+  private stateChangeCallbacks = new Set<StateChangeCallback>();
+  private eventCallbacks = new Set<EventCallback>();
 
   constructor() {
     this.state = {
@@ -523,17 +530,23 @@ export class AudioDuckingEngine {
   /**
    * Subscribe to state changes
    */
-  onStateChange(callback: (state: AudioDuckingState) => void): () => void {
+  onStateChange(callback: StateChangeCallback): UnsubscribeFunction {
     this.stateChangeCallbacks.add(callback);
-    return () => this.stateChangeCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.stateChangeCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**
    * Subscribe to ducking events
    */
-  onEvent(callback: (event: DuckingEvent) => void): () => void {
+  onEvent(callback: EventCallback): UnsubscribeFunction {
     this.eventCallbacks.add(callback);
-    return () => this.eventCallbacks.delete(callback);
+    const unsubscribe: UnsubscribeFunction = () => {
+      this.eventCallbacks.delete(callback);
+    };
+    return unsubscribe;
   }
 
   /**

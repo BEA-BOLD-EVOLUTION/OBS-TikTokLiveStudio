@@ -23,6 +23,11 @@ import {
 export type WorkflowExecutionCallback = (execution: WorkflowExecution) => void;
 
 /**
+ * Unsubscribe function type
+ */
+type UnsubscribeFunction = () => void;
+
+/**
  * Workflow Scheduler Engine
  * Singleton that manages scheduled workflow execution
  */
@@ -242,13 +247,14 @@ class WorkflowScheduler {
   /**
    * Register callback for workflow execution events
    */
-  onExecution(callback: WorkflowExecutionCallback): () => void {
+  onExecution(callback: WorkflowExecutionCallback): UnsubscribeFunction {
     this.executionCallbacks.add(callback);
 
     // Return unsubscribe function
-    return () => {
+    const unsubscribe: UnsubscribeFunction = () => {
       this.executionCallbacks.delete(callback);
     };
+    return unsubscribe;
   }
 
   /**
