@@ -732,6 +732,23 @@ Auto-load scenes, sources, and settings per schedule.
 - Guest leaves → restore full-screen layout
 - Individual audio controls per guest
 
+**Quick Cohost Capture:**
+
+- One-click logging during live stream when cohosting on TikTok
+- Capture fields:
+  - TikTok username (required)
+  - Join timestamp (auto-captured)
+  - Leave timestamp (optional, manual or auto)
+  - Stream topic/notes (optional freeform text)
+- Quick access: keyboard shortcut (Ctrl+Shift+C) or floating capture button during live
+- Cohost history log:
+  - Searchable list of all past cohosts
+  - Filter by date range, username
+  - Export to CSV for analytics/credits
+  - Show cohost frequency count (e.g., "5 streams with @username")
+- Auto-populate lower third with cohost username when captured
+- Post-stream summary: list of all cohosts from that session
+
 ### 📱 Mobile Control
 
 **Stream Deck companion app alternative:**
