@@ -738,6 +738,16 @@ When creators cohost with other TikTok streamers (using TikTok's native cohost f
   - Leave timestamp (optional, manual or auto)
   - Quick notes with preset tags (editable)
 - Quick access: keyboard shortcut (Ctrl+Shift+C) or floating capture button during live
+- **Returning cohost detection:**
+  - As you type username, system checks history
+  - Shows alert: "You've cohosted with @username before!"
+  - Displays previous cohost count: "3 previous streams"
+  - Shows last cohost date: "Last stream: 2 weeks ago"
+  - Auto-loads previous tags/notes for quick reference
+  - Visual indicators:
+    - 🟢 Green badge: Tagged "Great cohost" or positive notes
+    - 🔴 Red badge: Tagged "Block" with warning
+    - 🟡 Yellow badge: Mixed or neutral history
 
 **Quick Notes Presets:**
 
