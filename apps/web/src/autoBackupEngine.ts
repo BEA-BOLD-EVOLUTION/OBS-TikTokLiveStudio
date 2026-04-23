@@ -53,6 +53,9 @@ export class AutoBackupEngine {
     splitTimer: undefined,
     splitIndex: 0,
     queueProcessorInterval: undefined,
+    splitTimerActive: false,
+    activeUploads: 0,
+    queuedUploads: 0,
   };
 
   // Callback subscriptions
@@ -131,7 +134,6 @@ export class AutoBackupEngine {
         now,
         sceneName || 'unknown',
         this.state.splitIndex,
-        this.state.splitIndex > 0,
       );
 
       const record: BackupRecord = {
@@ -143,9 +145,12 @@ export class AutoBackupEngine {
         fileName,
         fileSize: 0,
         sceneName: sceneName || undefined,
-        isSplit: this.state.splitIndex > 0,
-        splitIndex: this.state.splitIndex,
-        parentRecordId: this.state.splitIndex > 0 ? this.state.currentRecordId : undefined,
+        isSplit: (this.state.splitIndex ?? 0) > 0,
+        splitIndex: this.state.splitIndex ?? 0,
+        parentRecordId:
+          (this.state.splitIndex ?? 0) > 0 && this.state.currentRecordId
+            ? this.state.currentRecordId
+            : undefined,
         locations: [],
         overallStatus: 'pending',
         error: undefined,
@@ -203,6 +208,7 @@ export class AutoBackupEngine {
           // For now, use placeholder values
           record.filePath = `recordings/${record.fileName}`;
           record.fileSize = Math.floor(Math.random() * 1000000000); // Placeholder
+          record.duration = record.duration ?? 0;
 
           await saveBackupRecord(record);
 
@@ -317,13 +323,13 @@ export class AutoBackupEngine {
       await this.stopRecording();
 
       // Increment split index
-      this.state.splitIndex++;
+      this.state.splitIndex = (this.state.splitIndex ?? 0) + 1;
 
       // Small delay before starting new recording
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Start new recording with same scene
-      const currentRecord = await getBackupRecord(this.state.currentRecordId || '');
+      const currentRecord = await getBackupRecord(this.state.currentRecordId ?? '');
       await this.startRecording(currentRecord?.sceneName);
     } catch (error) {
       console.error('Failed to execute split:', error);
@@ -357,6 +363,7 @@ export class AutoBackupEngine {
     // Initialize location statuses
     record.locations = locations.map((loc) => ({
       locationId: loc.id,
+      locationDisplayName: loc.displayName,
       status: 'pending',
       progress: 0,
       uploadedAt: undefined,
@@ -456,10 +463,9 @@ export class AutoBackupEngine {
         recordId: record.id,
         locationId: location.id,
         progress,
-        bytesUploaded: Math.floor((record.fileSize * progress) / 100),
-        totalBytes: record.fileSize,
+        bytesUploaded: Math.floor(((record.fileSize ?? 0) * progress) / 100),
+        totalBytes: record.fileSize ?? 0,
         speed: 5 * 1024 * 1024, // 5 MB/s placeholder
-        estimatedTimeRemaining: Math.floor(((100 - progress) / 100) * 10),
       });
 
       await new Promise((resolve) => setTimeout(resolve, 100));

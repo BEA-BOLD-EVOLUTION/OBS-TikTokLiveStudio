@@ -450,6 +450,29 @@ export function getStatusColor(status: UploadStatus): string {
 }
 
 /**
+ * Get backup record overall status color
+ */
+export function getRecordStatusColor(
+  status: 'recording' | 'completed' | 'uploading' | 'backed-up' | 'failed' | 'pending',
+): string {
+  switch (status) {
+    case 'recording':
+      return '#ef4444'; // Red (active recording)
+    case 'pending':
+      return '#6b7280'; // Gray
+    case 'uploading':
+      return '#3B82F6'; // Blue
+    case 'completed':
+    case 'backed-up':
+      return '#10b981'; // Green
+    case 'failed':
+      return '#ef4444'; // Red
+    default:
+      return '#9ca3af'; // Light gray
+  }
+}
+
+/**
  * Get location type icon
  */
 export function getLocationTypeIcon(type: LocationType): string {

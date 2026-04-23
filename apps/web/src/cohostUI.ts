@@ -312,7 +312,8 @@ export class CohostUI {
     dropZone?.addEventListener('drop', (e) => {
       e.preventDefault();
       dropZone.classList.remove('drag-over');
-      const file = e.dataTransfer?.files[0];
+      const dragEvent = e as DragEvent;
+      const file = dragEvent.dataTransfer?.files[0];
       if (file && file.type.startsWith('image/')) {
         this.handleImageUpload(file);
       }

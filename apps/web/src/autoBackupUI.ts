@@ -10,11 +10,13 @@ import type {
   BackupRecord,
   BackupState,
   UploadProgressEvent,
+  LocationStatus,
 } from './autoBackupTypes.js';
 import {
   formatFileSize,
   formatDuration,
   getStatusColor,
+  getRecordStatusColor,
   getLocationTypeIcon,
   getCloudProviderIcon,
   getCloudProviderColor,
@@ -41,7 +43,7 @@ export class AutoBackupUI {
   private records: BackupRecord[] = [];
   private currentState: BackupState | null = null;
   private durationInterval: ReturnType<typeof setInterval> | null = null;
-
+  private obsController: OBSController | null = null;
   constructor(containerId: string) {
     this.containerId = containerId;
     this.init();
@@ -90,6 +92,7 @@ export class AutoBackupUI {
 
   public setOBSController(obs: OBSController): void {
     this.obsController = obs;
+    console.log('OBS controller set for Auto Backup UI');
   }
 
   private async loadData(): Promise<void> {
@@ -404,7 +407,7 @@ export class AutoBackupUI {
           </div>
           <div class="summary-card">
             <div class="summary-label">Pending Uploads</div>
-            <div class="summary-value">${analytics.pendingUploads}</div>
+            <div class="summary-value">${(analytics as any).pendingUploads ?? 0}</div>
           </div>
         </div>
         <div class="records-list">
@@ -419,14 +422,14 @@ export class AutoBackupUI {
   }
 
   private renderRecordCard(record: BackupRecord): string {
-    const statusColor = getStatusColor(record.overallStatus);
+    const statusColor = getRecordStatusColor(record.overallStatus);
 
     return `
       <div class="record-card" style="border-left: 4px solid ${statusColor}">
         <div class="record-header">
           <div class="record-info">
             <div class="record-name">${record.fileName}</div>
-            <div class="record-meta">${this.formatTimeAgo(record.startTime)} • ${formatDuration(record.duration)} • ${formatFileSize(record.fileSize)}</div>
+            <div class="record-meta">${this.formatTimeAgo(record.startTime)} • ${formatDuration(record.duration ?? 0)} • ${formatFileSize(record.fileSize ?? 0)}</div>
           </div>
           <div class="record-status" style="color: ${statusColor}">${record.overallStatus}</div>
         </div>
@@ -438,12 +441,12 @@ export class AutoBackupUI {
     `;
   }
 
-  private renderLocationStatus(location: BackupLocation): string {
+  private renderLocationStatus(location: LocationStatus): string {
     const statusColor = getStatusColor(location.status);
     return `
       <div class="location-status">
         <span class="status-dot" style="background: ${statusColor}"></span>
-        <span class="location-name">${location.locationName}</span>
+        <span class="location-name">${location.locationDisplayName}</span>
         <span class="location-status-text">${location.status}</span>
       </div>
     `;
@@ -455,11 +458,12 @@ export class AutoBackupUI {
     totalDuration: number;
     successfulUploads: number;
     failedUploads: number;
+    pendingUploads: number;
   } {
     return {
       totalRecordings: this.records.length,
-      totalSize: this.records.reduce((sum, r) => sum + r.fileSize, 0),
-      totalDuration: this.records.reduce((sum, r) => sum + r.duration, 0),
+      totalSize: this.records.reduce((sum, r) => sum + (r.fileSize ?? 0), 0),
+      totalDuration: this.records.reduce((sum, r) => sum + (r.duration ?? 0), 0),
       successfulUploads: this.records.reduce(
         (sum, r) => sum + r.locations.filter((l) => l.status === 'completed').length,
         0,
@@ -469,9 +473,7 @@ export class AutoBackupUI {
         0,
       ),
       pendingUploads: this.records.reduce(
-        (sum, r) =>
-          sum +
-          r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
+        (sum, r) => sum + r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
         0,
       ),
     };
@@ -533,7 +535,7 @@ export class AutoBackupUI {
       btn.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
         const locationId = target.dataset.locationId;
-        if (locationId) this.handleTestLocation(locationId);
+        if (locationId) this.handleTestLocation();
       });
     });
 

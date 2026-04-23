@@ -34,6 +34,7 @@ import {
 export class AudioDuckingUI {
   private container: HTMLElement | null = null;
   private currentView: 'status' | 'sources' | 'history' = 'status';
+  private obsController: OBSController | null = null;
   private state: AudioDuckingState | null = null;
   private refreshInterval: number | null = null;
 
@@ -52,6 +53,7 @@ export class AudioDuckingUI {
    */
   setOBSController(obs: OBSController | null): void {
     this.obsController = obs;
+    console.log('OBS controller set for Audio Ducking UI');
     audioDuckingEngine.setOBSController(obs);
   }
 

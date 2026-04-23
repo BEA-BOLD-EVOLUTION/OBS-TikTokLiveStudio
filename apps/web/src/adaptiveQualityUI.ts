@@ -23,6 +23,8 @@ import { calculateAnalytics } from './adaptiveQualityStorage.js';
 export class AdaptiveQualityUI {
   private container: HTMLElement;
   private currentState: AdaptiveQualityState | null = null;
+  private obsController: OBSController | null = null;
+  private currentView: 'status' | 'settings' | 'history' = 'status';
 
   private stateUnsubscribe: (() => void) | null = null;
   private adjustmentUnsubscribe: (() => void) | null = null;
@@ -41,6 +43,7 @@ export class AdaptiveQualityUI {
    */
   setOBSController(obs: OBSController): void {
     this.obsController = obs;
+    console.log('OBS controller set for Adaptive Quality UI');
     adaptiveQualityEngine.setOBSController(obs);
   }
 
@@ -114,6 +117,7 @@ export class AdaptiveQualityUI {
    */
   private switchView(view: 'status' | 'settings' | 'history'): void {
     this.currentView = view;
+    console.log(`Switched to ${view} view`);
 
     // Update active button
     this.container.querySelectorAll('.btn-view').forEach((btn) => {

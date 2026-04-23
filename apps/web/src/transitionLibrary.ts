@@ -859,16 +859,16 @@ export class TransitionLibraryUI {
             id: `imported-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: file.name.replace(/\.(mp4|mov|webm)$/, ''),
             description: `Imported from ${file.name}`,
-            videoPath: URL.createObjectURL(file),
+            video: URL.createObjectURL(file),
             duration: duration,
             tags: ['imported'],
             color: '#3B82F6',
             emoji: '🎬',
             favorite: false,
+            returnToPrevious: true,
             collections: [],
             usageCount: 0,
-            streamDeckPages: [],
-            returnToPrevious: true,
+            lastUsed: new Date(),
           };
 
           resolve(transition);
@@ -958,7 +958,7 @@ export class TransitionLibraryUI {
         sorted.sort((a, b) => a.duration - b.duration);
         break;
       case 'usage':
-        sorted.sort((a, b) => b.usageCount - a.usageCount);
+        sorted.sort((a, b) => (b.usageCount ?? 0) - (a.usageCount ?? 0));
         break;
       case 'recent':
         sorted.sort((a, b) => {
@@ -1008,7 +1008,7 @@ export class TransitionLibraryUI {
       await this.player.playTransition(transition);
 
       // Update usage count
-      transition.usageCount++;
+      transition.usageCount = (transition.usageCount ?? 0) + 1;
       transition.lastUsed = new Date();
       this.render();
     } catch (error) {

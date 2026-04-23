@@ -4,6 +4,7 @@
 
 import type { OCRResult, ImageRegion } from './cohostTypes.js';
 import type { Worker } from 'tesseract.js';
+import { PSM } from 'tesseract.js';
 
 // Tesseract.js will be imported dynamically to avoid bundle bloat
 let tesseractWorker: Worker | null = null;

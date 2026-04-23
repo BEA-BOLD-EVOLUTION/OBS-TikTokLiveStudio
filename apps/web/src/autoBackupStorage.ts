@@ -11,6 +11,7 @@ import type {
   BackupAnalytics,
   StorageByLocation,
   LocationStatus,
+  CloudProvider,
 } from './autoBackupTypes.js';
 import { DEFAULT_BACKUP_CONFIG } from './autoBackupTypes.js';
 
@@ -27,7 +28,7 @@ type SerializedRecord = Omit<BackupRecord, 'startTime' | 'endTime' | 'createdAt'
 };
 
 type SerializedCloudAuth = {
-  provider: BackupLocation['cloudAuth'] extends { provider: infer P } ? P : never;
+  provider: CloudProvider;
   accessToken: string;
   refreshToken: string;
   expiresAt: string;
