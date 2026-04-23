@@ -134,23 +134,24 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 
 ```yaml
 [Play Transition] button →
-  1. Fade out current scene (1 second)
-  2. Switch to SCN_TRANSITION (media source with AI-generated video)
-  3. Play video clip (auto-detect duration or use preset length)
-  4. When video ends → trigger transition back
-  5. Fade in to previous scene or next scene (1 second)
-  6. Resume normal audio/video flow
+  1. Switch to SCN_TRANSITION (media source with complete AI-generated video)
+  2. Play video clip (contains: transform-out → content → transform-in)
+  3. When video ends → switch back to previous scene or next scene
+  4. Resume normal audio/video flow
 ```
+
+**Note:** The AI-generated video includes the full transformation sequence baked in — no separate fade/transform effects needed in OBS. The video handles entry animation, content display, and exit animation as a single render.
 
 **Advanced features:**
 
 - **Transition library:** Pre-load multiple AI clips (intro, sponsor, topic-change, outro)
 - **Smart selection:** Choose transition based on context ("topic change" vs "break")
-- **Custom timing:** Override fade duration, video playback speed
+- **Custom playback:** Override video playback speed (slow-mo, fast-forward)
 - **Queue management:** Schedule multiple transitions (e.g., every 20 minutes)
 - **Stream Deck integration:** Dedicated buttons per transition type
 - **Auto-resume:** Remember which scene was active before transition, return to it
 - **Preview mode:** Test transition sequence without going live
+- **Video validation:** Auto-detect video duration, resolution, format on import
 
 **Configuration example:**
 
@@ -162,8 +163,7 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
       "name": "Topic Change",
       "video": "transitions/ai-topic-change.mp4",
       "duration": 3,
-      "fadeOut": 1,
-      "fadeIn": 1,
+      "description": "Morph effect with particle swirl",
       "returnToPrevious": true
     },
     {
@@ -171,10 +171,17 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
       "name": "Sponsor Break",
       "video": "transitions/sponsor-bumper.mp4",
       "duration": 5,
-      "fadeOut": 0.5,
-      "fadeIn": 0.5,
+      "description": "Glitch transition with brand logo",
       "returnToPrevious": false,
       "nextScene": "SCN_LIVE"
+    },
+    {
+      "id": "TRN_BRB",
+      "name": "Be Right Back",
+      "video": "transitions/brb-warp.mp4",
+      "duration": 4,
+      "description": "Warp effect with countdown timer",
+      "returnToPrevious": true
     }
   ]
 }
@@ -183,10 +190,13 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 **Technical implementation:**
 
 - Media source in OBS configured to play video file once (no loop)
-- Webhook or callback when media playback ends
+- OBS WebSocket `MediaInputPlaybackEnded` event triggers scene switch back
 - State machine tracks: previous scene → transition → next scene
 - Stream Deck buttons trigger by transition ID
 - Web UI shows transition preview thumbnails + duration
+- Support for common AI video formats: MP4 (H.264/H.265), WebM, MOV
+- Auto-detect video properties on import (resolution, fps, codec)
+- Validate video duration matches config or auto-update
 
 ### �🎵 Audio Scene Switching
 
