@@ -9,9 +9,7 @@
       "UUID": "com.obs.tiktok.streamdeck.switchscene",
       "Name": "Switch Scene",
       "Tooltip": "Switch to a mapped OBS scene",
-      "Controllers": [
-        "Keypad"
-      ]
+      "Controllers": ["Keypad"]
     }
   ]
 }

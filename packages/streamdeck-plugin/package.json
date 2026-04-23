@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "tsx": "4.21.0"
+    "@types/node": "^20.19.39",
+    "tsx": "^4.21.0"
   }
 }
