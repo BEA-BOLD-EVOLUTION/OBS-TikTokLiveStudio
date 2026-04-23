@@ -172,8 +172,8 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const existingItem = (sceneItems.sceneItems as any[]).find(
-        (item: any) => item.sourceName === sourceName,
+      const existingItem = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
+        (item) => item.sourceName === sourceName,
       );
 
       if (existingItem) {
@@ -200,8 +200,8 @@ export class MediaSourceController {
         sceneName: sceneName,
       });
 
-      const newItem = (updatedSceneItems.sceneItems as any[]).find(
-        (item: any) => item.sourceName === sourceName,
+      const newItem = (updatedSceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
+        (item) => item.sourceName === sourceName,
       );
 
       if (!newItem) {

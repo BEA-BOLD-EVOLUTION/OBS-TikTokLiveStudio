@@ -407,7 +407,7 @@ export class AutoBackupUI {
           </div>
           <div class="summary-card">
             <div class="summary-label">Pending Uploads</div>
-            <div class="summary-value">${(analytics as any).pendingUploads ?? 0}</div>
+            <div class="summary-value">${analytics.pendingUploads ?? 0}</div>
           </div>
         </div>
         <div class="records-list">

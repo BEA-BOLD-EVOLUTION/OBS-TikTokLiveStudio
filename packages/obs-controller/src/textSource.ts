@@ -30,8 +30,8 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const existingItem = (sceneItems.sceneItems as any[]).find(
-        (item: any) => item.sourceName === settings.sourceName,
+      const existingItem = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
+        (item) => item.sourceName === settings.sourceName,
       );
 
       if (!existingItem) {
@@ -40,14 +40,14 @@ export class TextSourceController {
           sceneName: this.sceneName,
           inputName: settings.sourceName,
           inputKind: 'text_gdiplus_v2', // GDI+ Text source for Windows
-          inputSettings: this.buildTextSettings(settings) as any,
+          inputSettings: this.buildTextSettings(settings) as Record<string, unknown>,
           sceneItemEnabled: settings.visible,
         });
       } else {
         // Update existing source
         await this.obs.call('SetInputSettings', {
           inputName: settings.sourceName,
-          inputSettings: this.buildTextSettings(settings) as any,
+          inputSettings: this.buildTextSettings(settings) as Record<string, unknown>,
         });
 
         // Update visibility
@@ -72,8 +72,8 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = (sceneItems.sceneItems as any[]).find(
-        (item: any) => item.sourceName === sourceName,
+      const item = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
+        (item) => item.sourceName === sourceName,
       );
 
       if (item) {
@@ -98,8 +98,8 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = (sceneItems.sceneItems as any[]).find(
-        (item: any) => item.sourceName === sourceName,
+      const item = (sceneItems.sceneItems as Array<{ sceneItemId: number; sourceName: string }>).find(
+        (item) => item.sourceName === sourceName,
       );
 
       if (item) {
