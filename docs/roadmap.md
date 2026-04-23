@@ -153,6 +153,7 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
       - **Quick Reactions:** Ultra-short (0.3-1.5 sec) instant-impact moments (jump scares, flash cuts)
       - **Intros:** Stream opening sequences
       - **Outros:** Stream ending sequences
+    - **Default sections can be hidden:** Show/hide any default section you don't use (cannot be deleted, only hidden)
     - **Add unlimited custom sections:** Create your own categories (e.g., "Chapter Breaks", "Guest Arrivals", "Poll Results", "Donation Alerts", "Seasonal", "Branded Content")
     - **Each section is distinct:** Independent management, colors, favorites, Stream Deck pages
     - **Editable section titles:** Rename any section to match your workflow
@@ -282,15 +283,8 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
       "autoGenerateThumbnails": true,
       "thumbnailTimestamp": "midpoint",
       "maxFavorites": 12,
-      "enabledSections": [
-        "Topic Changes",
-        "Sponsors",
-        "BRB",
-        "Quick Reactions",
-        "Intros",
-        "Outros",
-        "Guest Arrivals"
-      ],
+      "enabledSections": ["Topic Changes", "Sponsors", "BRB", "Quick Reactions", "Guest Arrivals"],
+      "hiddenSections": ["Intros", "Outros"],
       "streamDeckPages": [
         {
           "page": 1,
@@ -317,7 +311,8 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 - **Web UI library manager:**
   - **Section management:**
     - Create new sections (+ Add Section button)
-    - Delete custom sections (default sections cannot be deleted)
+    - Delete custom sections (default sections cannot be deleted, only hidden)
+    - Show/hide default sections (toggle eye icon - hidden sections don't appear in UI or Stream Deck)
     - Reorder sections (drag-and-drop)
     - Rename any section (click to edit inline)
     - Assign section-level color themes
