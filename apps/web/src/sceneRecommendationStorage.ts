@@ -49,11 +49,11 @@ async function initDatabase(): Promise<IDBDatabase> {
  * Add scene switch record
  */
 export async function addSceneSwitchRecord(
-  record: Omit<SceneSwitchRecord, 'id' | 'timestamp' | 'dayOfWeek' | 'hour' | 'minute'>
+  record: Omit<SceneSwitchRecord, 'id' | 'timestamp' | 'dayOfWeek' | 'hour' | 'minute'>,
 ): Promise<string> {
   const db = await initDatabase();
   const now = new Date();
-  
+
   const fullRecord: SceneSwitchRecord = {
     id: `${now.getTime()}-${Math.random().toString(36).substring(2, 9)}`,
     timestamp: now,
@@ -76,13 +76,9 @@ export async function addSceneSwitchRecord(
 /**
  * Get all scene switch records within time window
  */
-export async function getSceneSwitchHistory(
-  timeWindowMs?: number
-): Promise<SceneSwitchRecord[]> {
+export async function getSceneSwitchHistory(timeWindowMs?: number): Promise<SceneSwitchRecord[]> {
   const db = await initDatabase();
-  const cutoffTime = timeWindowMs
-    ? new Date(Date.now() - timeWindowMs)
-    : new Date(0);
+  const cutoffTime = timeWindowMs ? new Date(Date.now() - timeWindowMs) : new Date(0);
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], 'readonly');
@@ -107,7 +103,7 @@ export async function getSceneSwitchHistory(
  */
 export async function getSceneSwitchesByName(
   sceneName: string,
-  timeWindowMs?: number
+  timeWindowMs?: number,
 ): Promise<SceneSwitchRecord[]> {
   const allRecords = await getSceneSwitchHistory(timeWindowMs);
   return allRecords.filter((record) => record.sceneName === sceneName);
@@ -116,9 +112,7 @@ export async function getSceneSwitchesByName(
 /**
  * Get scene switches by session ID
  */
-export async function getSceneSwitchesBySession(
-  sessionId: string
-): Promise<SceneSwitchRecord[]> {
+export async function getSceneSwitchesBySession(sessionId: string): Promise<SceneSwitchRecord[]> {
   const db = await initDatabase();
 
   return new Promise((resolve, reject) => {
@@ -204,9 +198,7 @@ export async function saveConfig(config: RecommendationConfig): Promise<void> {
 /**
  * Calculate analytics from stored data
  */
-export async function calculateAnalytics(
-  timeWindowMs?: number
-): Promise<SceneAnalytics> {
+export async function calculateAnalytics(timeWindowMs?: number): Promise<SceneAnalytics> {
   const records = await getSceneSwitchHistory(timeWindowMs);
 
   if (records.length === 0) {
@@ -233,14 +225,11 @@ export async function calculateAnalytics(
   // Calculate scene frequency
   const sceneFrequency = new Map<string, number>();
   records.forEach((record) => {
-    sceneFrequency.set(
-      record.sceneName,
-      (sceneFrequency.get(record.sceneName) || 0) + 1
-    );
+    sceneFrequency.set(record.sceneName, (sceneFrequency.get(record.sceneName) || 0) + 1);
   });
 
   const mostUsedScene = Array.from(sceneFrequency.entries()).reduce((a, b) =>
-    a[1] > b[1] ? a : b
+    a[1] > b[1] ? a : b,
   )[0];
 
   // Time of day distribution

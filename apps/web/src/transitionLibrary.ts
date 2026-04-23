@@ -22,7 +22,6 @@ export class TransitionLibraryUI {
   private sortBy: 'name' | 'duration' | 'usage' | 'recent' = 'name';
   private draggedTransition: Transition | null = null;
   private draggedSection: string | null = null;
-  private showImportModal = false;
 
   constructor(containerId: string, player: TransitionPlayer) {
     const element = document.getElementById(containerId);
@@ -284,9 +283,7 @@ export class TransitionLibraryUI {
    * Render individual list row
    */
   private renderListRow(transition: Transition): string {
-    const lastUsed = transition.lastUsed
-      ? this.formatRelativeTime(transition.lastUsed)
-      : 'Never';
+    const lastUsed = transition.lastUsed ? this.formatRelativeTime(transition.lastUsed) : 'Never';
 
     return `
       <div
@@ -538,18 +535,24 @@ export class TransitionLibraryUI {
     const sortSelect = this.container.querySelector('#sort-select') as HTMLSelectElement;
     if (sortSelect) {
       sortSelect.addEventListener('change', (e) => {
-        const sortBy = (e.target as HTMLSelectElement).value as 'name' | 'duration' | 'usage' | 'recent';
+        const sortBy = (e.target as HTMLSelectElement).value as
+          | 'name'
+          | 'duration'
+          | 'usage'
+          | 'recent';
         this.setSortBy(sortBy);
       });
     }
 
     // Drag-and-drop for transitions
-    this.container.querySelectorAll('.grid-card[draggable], .list-row[draggable]').forEach((card) => {
-      card.addEventListener('dragstart', (e) => this.handleDragStart(e as DragEvent));
-      card.addEventListener('dragover', (e) => this.handleDragOver(e as DragEvent));
-      card.addEventListener('drop', (e) => this.handleDrop(e as DragEvent));
-      card.addEventListener('dragend', (e) => this.handleDragEnd(e as DragEvent));
-    });
+    this.container
+      .querySelectorAll('.grid-card[draggable], .list-row[draggable]')
+      .forEach((card) => {
+        card.addEventListener('dragstart', (e) => this.handleDragStart(e as DragEvent));
+        card.addEventListener('dragover', (e) => this.handleDragOver(e as DragEvent));
+        card.addEventListener('drop', (e) => this.handleDrop(e as DragEvent));
+        card.addEventListener('dragend', (e) => this.handleDragEnd(e as DragEvent));
+      });
 
     // Drag-and-drop for section buttons (to move transitions between sections)
     this.container.querySelectorAll('.section-btn').forEach((btn) => {
@@ -692,10 +695,7 @@ export class TransitionLibraryUI {
     this.selectedSection = targetSectionId;
 
     this.render();
-    this.showNotification(
-      `Moved "${removed.name}" to ${targetSection.name}`,
-      'success',
-    );
+    this.showNotification(`Moved "${removed.name}" to ${targetSection.name}`, 'success');
   }
 
   /**
@@ -794,7 +794,7 @@ export class TransitionLibraryUI {
 
       try {
         const transition = await this.processVideoFile(file);
-        
+
         // Auto-categorize based on duration
         let targetSectionId = 'topic-changes'; // default
         if (transition.duration < 1) {
@@ -852,7 +852,7 @@ export class TransitionLibraryUI {
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(video, 0, 0);
 
-          const thumbnail = canvas.toDataURL('image/jpeg', 0.7);
+          canvas.toDataURL('image/jpeg', 0.7);
 
           // Create transition object
           const transition: Transition = {

@@ -73,7 +73,10 @@ export class LowerThirdsManager {
         fontFamily: template.style.fontFamily,
         fontWeight: this.parseFontWeight(template.style.fontWeight),
         color: hexToABGR(template.style.textColor, 100),
-        backgroundColor: hexToABGR(template.style.backgroundColor, template.style.backgroundOpacity),
+        backgroundColor: hexToABGR(
+          template.style.backgroundColor,
+          template.style.backgroundOpacity,
+        ),
         opacity: 100,
         visible: true,
       };

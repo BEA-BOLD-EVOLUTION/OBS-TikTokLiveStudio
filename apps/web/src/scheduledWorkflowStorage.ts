@@ -111,8 +111,12 @@ export async function getWorkflow(id: string): Promise<ScheduledWorkflow | null>
         ...request.result,
         createdAt: new Date(request.result.createdAt),
         lastModified: new Date(request.result.lastModified),
-        lastExecuted: request.result.lastExecuted ? new Date(request.result.lastExecuted) : undefined,
-        nextExecution: request.result.nextExecution ? new Date(request.result.nextExecution) : undefined,
+        lastExecuted: request.result.lastExecuted
+          ? new Date(request.result.lastExecuted)
+          : undefined,
+        nextExecution: request.result.nextExecution
+          ? new Date(request.result.nextExecution)
+          : undefined,
       };
 
       resolve(workflow);
@@ -134,7 +138,12 @@ export async function getAllWorkflows(): Promise<ScheduledWorkflow[]> {
     const request = store.getAll();
 
     request.onsuccess = () => {
-      const workflows = request.result.map((w: any) => ({
+      const workflows = request.result.map((w: Omit<ScheduledWorkflow, 'createdAt' | 'lastModified' | 'lastExecuted' | 'nextExecution'> & {
+        createdAt: string;
+        lastModified: string;
+        lastExecuted?: string;
+        nextExecution?: string;
+      }) => ({
         ...w,
         createdAt: new Date(w.createdAt),
         lastModified: new Date(w.lastModified),
@@ -219,9 +228,8 @@ export async function recordExecution(execution: WorkflowExecution): Promise<voi
  */
 export async function updateWorkflowAfterExecution(
   id: string,
-  success: boolean,
-  error?: string
 ): Promise<void> {
+  // success and error parameters removed as they're not used in current implementation
   const workflow = await getWorkflow(id);
   if (!workflow) return;
 
@@ -243,7 +251,10 @@ export async function updateWorkflowAfterExecution(
 /**
  * Get execution history for a workflow
  */
-export async function getWorkflowExecutions(workflowId: string, limit = 50): Promise<WorkflowExecution[]> {
+export async function getWorkflowExecutions(
+  workflowId: string,
+  limit = 50,
+): Promise<WorkflowExecution[]> {
   const db = await initDatabase();
 
   return new Promise((resolve, reject) => {
@@ -254,11 +265,14 @@ export async function getWorkflowExecutions(workflowId: string, limit = 50): Pro
 
     request.onsuccess = () => {
       const executions = request.result
-        .map((e: any) => ({
+        .map((e: Omit<WorkflowExecution, 'executedAt'> & { executedAt: string }) => ({
           ...e,
           executedAt: new Date(e.executedAt),
         }))
-        .sort((a: WorkflowExecution, b: WorkflowExecution) => b.executedAt.getTime() - a.executedAt.getTime())
+        .sort(
+          (a: WorkflowExecution, b: WorkflowExecution) =>
+            b.executedAt.getTime() - a.executedAt.getTime(),
+        )
         .slice(0, limit);
 
       resolve(executions);
@@ -281,11 +295,14 @@ export async function getAllExecutions(limit = 100): Promise<WorkflowExecution[]
 
     request.onsuccess = () => {
       const executions = request.result
-        .map((e: any) => ({
+        .map((e: Omit<WorkflowExecution, 'executedAt'> & { executedAt: string }) => ({
           ...e,
           executedAt: new Date(e.executedAt),
         }))
-        .sort((a: WorkflowExecution, b: WorkflowExecution) => b.executedAt.getTime() - a.executedAt.getTime())
+        .sort(
+          (a: WorkflowExecution, b: WorkflowExecution) =>
+            b.executedAt.getTime() - a.executedAt.getTime(),
+        )
         .slice(0, limit);
 
       resolve(executions);

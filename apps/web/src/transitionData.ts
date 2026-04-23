@@ -3,11 +3,7 @@
  * Phase 2: AI Transition Sequences
  */
 
-import type {
-  TransitionLibrary,
-  TransitionSection,
-  Transition,
-} from './transitionTypes.js';
+import type { TransitionLibrary, TransitionSection, Transition } from './transitionTypes.js';
 import { DEFAULT_SECTIONS } from './transitionTypes.js';
 
 /**
@@ -270,10 +266,7 @@ export function getAllTags(library: TransitionLibrary): string[] {
 /**
  * Search transitions by query
  */
-export function searchTransitions(
-  library: TransitionLibrary,
-  query: string,
-): Transition[] {
+export function searchTransitions(library: TransitionLibrary, query: string): Transition[] {
   const lowerQuery = query.toLowerCase();
   return library.sections
     .flatMap((section) => section.transitions)

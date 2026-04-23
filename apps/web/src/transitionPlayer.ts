@@ -27,7 +27,10 @@ export class TransitionPlayer {
    * 5. Wait for playback to end
    * 6. Return to previous scene (or specified next scene)
    */
-  async playTransition(transition: Transition, transitionSceneName = 'SCN_TRANSITION'): Promise<void> {
+  async playTransition(
+    transition: Transition,
+    transitionSceneName = 'SCN_TRANSITION',
+  ): Promise<void> {
     if (!this.obs) {
       throw new Error('OBS controller not initialized');
     }

@@ -6,10 +6,8 @@
 import type { OBSController } from '@obs-tiktok/obs-controller';
 import type {
   AdaptiveQualityState,
-  QualityAdjustment,
   AdaptiveQualityConfig,
   QualityPreset,
-  NetworkMetrics,
 } from './adaptiveQualityTypes.js';
 import {
   DEFAULT_QUALITY_PRESETS,
@@ -24,9 +22,7 @@ import { calculateAnalytics } from './adaptiveQualityStorage.js';
 
 export class AdaptiveQualityUI {
   private container: HTMLElement;
-  private obsController: OBSController | null = null;
   private currentState: AdaptiveQualityState | null = null;
-  private currentView: 'status' | 'settings' | 'history' = 'status';
 
   private stateUnsubscribe: (() => void) | null = null;
   private adjustmentUnsubscribe: (() => void) | null = null;
@@ -64,7 +60,7 @@ export class AdaptiveQualityUI {
     this.adjustmentUnsubscribe = adaptiveQualityEngine.onAdjustment((adjustment) => {
       this.showNotification(
         `Quality adjusted: ${adjustment.fromPreset} → ${adjustment.toPreset}`,
-        adjustment.success ? 'success' : 'error'
+        adjustment.success ? 'success' : 'error',
       );
       this.renderStatusView();
     });
@@ -222,8 +218,9 @@ export class AdaptiveQualityUI {
         <div class="status-card">
           <h3>Manual Preset Override</h3>
           <div class="preset-selector">
-            ${Object.entries(DEFAULT_QUALITY_PRESETS).map(
-              ([preset, config]) => `
+            ${Object.entries(DEFAULT_QUALITY_PRESETS)
+              .map(
+                ([preset, config]) => `
               <button
                 class="btn-preset ${state.currentPreset === preset ? 'active' : ''}"
                 data-preset="${preset}"
@@ -232,8 +229,9 @@ export class AdaptiveQualityUI {
                 <div class="preset-name">${config.name}</div>
                 <div class="preset-info">${config.video.width}x${config.video.height} @ ${config.video.videoBitrateKbps}Kbps</div>
               </button>
-            `
-            ).join('')}
+            `,
+              )
+              .join('')}
           </div>
           <p class="help-text">Click a preset to manually override automatic adjustments</p>
         </div>
@@ -320,13 +318,15 @@ export class AdaptiveQualityUI {
         <div class="form-group">
           <label for="startingPreset">Starting Preset:</label>
           <select id="startingPreset">
-            ${Object.entries(DEFAULT_QUALITY_PRESETS).map(
-              ([preset, presetConfig]) => `
+            ${Object.entries(DEFAULT_QUALITY_PRESETS)
+              .map(
+                ([preset, presetConfig]) => `
               <option value="${preset}" ${config.startingPreset === preset ? 'selected' : ''}>
                 ${presetConfig.name}
               </option>
-            `
-            ).join('')}
+            `,
+              )
+              .join('')}
           </select>
           <p class="help-text">Quality preset to use when starting stream</p>
         </div>
@@ -464,7 +464,7 @@ export class AdaptiveQualityUI {
                   </div>
                   ${adj.error ? `<div class="adjustment-error">Error: ${adj.error}</div>` : ''}
                 </div>
-              `
+              `,
                     )
                     .join('')
                 : '<div class="empty-state">No adjustment history available</div>'
@@ -502,7 +502,10 @@ export class AdaptiveQualityUI {
     try {
       const success = await adaptiveQualityEngine.setPreset(preset);
       if (success) {
-        this.showNotification(`Switched to ${DEFAULT_QUALITY_PRESETS[preset].name} quality`, 'success');
+        this.showNotification(
+          `Switched to ${DEFAULT_QUALITY_PRESETS[preset].name} quality`,
+          'success',
+        );
         this.renderStatusView();
       } else {
         this.showNotification('Failed to change quality preset', 'error');
@@ -523,17 +526,32 @@ export class AdaptiveQualityUI {
     try {
       const config: Partial<AdaptiveQualityConfig> = {
         enabled: (content.querySelector('#enabled') as HTMLInputElement).checked,
-        strategy: (content.querySelector('#strategy') as HTMLSelectElement).value as any,
-        startingPreset: (content.querySelector('#startingPreset') as HTMLSelectElement).value as QualityPreset,
+        strategy: (content.querySelector('#strategy') as HTMLSelectElement).value as
+          | 'conservative'
+          | 'balanced'
+          | 'aggressive',
+        startingPreset: (content.querySelector('#startingPreset') as HTMLSelectElement)
+          .value as QualityPreset,
         autoRecovery: (content.querySelector('#autoRecovery') as HTMLInputElement).checked,
-        monitoringIntervalMs: parseInt((content.querySelector('#monitoringInterval') as HTMLInputElement).value) * 1000,
-        minAdjustmentIntervalMs: parseInt((content.querySelector('#minAdjustmentInterval') as HTMLInputElement).value) * 1000,
+        monitoringIntervalMs:
+          parseInt((content.querySelector('#monitoringInterval') as HTMLInputElement).value) * 1000,
+        minAdjustmentIntervalMs:
+          parseInt((content.querySelector('#minAdjustmentInterval') as HTMLInputElement).value) *
+          1000,
         thresholds: {
-          excellentBandwidthKbps: parseInt((content.querySelector('#excellentBandwidth') as HTMLInputElement).value),
-          goodBandwidthKbps: parseInt((content.querySelector('#goodBandwidth') as HTMLInputElement).value),
-          fairBandwidthKbps: parseInt((content.querySelector('#fairBandwidth') as HTMLInputElement).value),
+          excellentBandwidthKbps: parseInt(
+            (content.querySelector('#excellentBandwidth') as HTMLInputElement).value,
+          ),
+          goodBandwidthKbps: parseInt(
+            (content.querySelector('#goodBandwidth') as HTMLInputElement).value,
+          ),
+          fairBandwidthKbps: parseInt(
+            (content.querySelector('#fairBandwidth') as HTMLInputElement).value,
+          ),
           maxLatencyMs: parseInt((content.querySelector('#maxLatency') as HTMLInputElement).value),
-          maxPacketLoss: parseFloat((content.querySelector('#maxPacketLoss') as HTMLInputElement).value),
+          maxPacketLoss: parseFloat(
+            (content.querySelector('#maxPacketLoss') as HTMLInputElement).value,
+          ),
         },
       };
 

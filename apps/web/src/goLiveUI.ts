@@ -52,11 +52,11 @@ export class GoLiveUI {
     } else if (step === 'preflight') {
       this.renderPreflightModal(state);
     } else if (step === 'starting') {
-      this.renderStartingModal(state);
+      this.renderStartingModal();
     } else if (step === 'checklist') {
       this.renderChecklistModal(state);
     } else if (step === 'going-live') {
-      this.renderGoingLiveModal(state);
+      this.renderGoingLiveModal();
     } else if (step === 'live') {
       this.renderLiveState(state);
     } else if (step === 'error') {
@@ -98,7 +98,7 @@ export class GoLiveUI {
           ${check.errorMessage ? `<div class="check-error">${check.errorMessage}</div>` : ''}
         </div>
       </div>
-    `
+    `,
       )
       .join('');
 
@@ -122,7 +122,7 @@ export class GoLiveUI {
   /**
    * Render starting modal (switching to starting scene, starting virtual camera)
    */
-  private renderStartingModal(state: GoLiveState): void {
+  private renderStartingModal(): void {
     this.container.innerHTML = `
       <div class="go-live-modal-backdrop">
         <div class="go-live-modal">
@@ -174,7 +174,7 @@ export class GoLiveUI {
           ${item.description ? `<div class="item-description">${item.description}</div>` : ''}
         </div>
       </label>
-    `
+    `,
       )
       .join('');
 
@@ -207,7 +207,7 @@ export class GoLiveUI {
 
     // Attach event listeners
     const checkboxes = this.container.querySelectorAll<HTMLInputElement>(
-      '.checklist-item input[type="checkbox"]'
+      '.checklist-item input[type="checkbox"]',
     );
     checkboxes.forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
@@ -232,7 +232,7 @@ export class GoLiveUI {
   /**
    * Render going live modal (switching to live scene, starting recording)
    */
-  private renderGoingLiveModal(state: GoLiveState): void {
+  private renderGoingLiveModal(): void {
     this.container.innerHTML = `
       <div class="go-live-modal-backdrop">
         <div class="go-live-modal">

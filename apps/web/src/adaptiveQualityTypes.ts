@@ -363,7 +363,7 @@ export const DEFAULT_ADAPTIVE_CONFIG: AdaptiveQualityConfig = {
  */
 export function calculateNetworkQuality(
   metrics: Omit<NetworkMetrics, 'quality'>,
-  thresholds: NetworkThresholds
+  thresholds: NetworkThresholds,
 ): NetworkQuality {
   const { bandwidthKbps, latencyMs, packetLoss } = metrics;
 

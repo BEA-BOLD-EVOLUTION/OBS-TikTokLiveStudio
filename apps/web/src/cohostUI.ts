@@ -3,7 +3,13 @@
  */
 
 import type { CohostRecord, CohostUIState } from './cohostTypes.js';
-import { DEFAULT_QUICK_NOTES, formatCohostDisplay, timeAgo, isValidUsername, normalizeUsername } from './cohostTypes.js';
+import {
+  DEFAULT_QUICK_NOTES,
+  formatCohostDisplay,
+  timeAgo,
+  isValidUsername,
+  normalizeUsername,
+} from './cohostTypes.js';
 import {
   addCohostRecord,
   getAllCohosts,
@@ -335,7 +341,7 @@ export class CohostUI {
     // Quick notes buttons
     const noteButtons = this.container.querySelectorAll('.btn-quick-note');
     noteButtons.forEach((button) => {
-      button.addEventListener('click', (e) => {
+      button.addEventListener('click', () => {
         button.classList.toggle('selected');
       });
     });
@@ -468,7 +474,10 @@ export class CohostUI {
       const username = extractUsernameFromOCR(ocrResult);
 
       if (!isValidUsername(username)) {
-        this.showNotification('OCR failed to find valid username. Try adjusting the crop region.', 'error');
+        this.showNotification(
+          'OCR failed to find valid username. Try adjusting the crop region.',
+          'error',
+        );
         this.state.isProcessing = false;
         this.render();
         return;
@@ -514,7 +523,7 @@ export class CohostUI {
       );
 
       this.showNotification(`Cohost @${this.state.currentUsername} saved!`, 'success');
-      
+
       // Reset capture state
       this.state.imageFile = undefined;
       this.state.currentUsername = undefined;

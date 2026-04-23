@@ -9,10 +9,7 @@ import type {
   WorkflowAction,
   WorkflowExecution,
 } from './scheduledWorkflowTypes.js';
-import {
-  generateExecutionId,
-  calculateNextExecution,
-} from './scheduledWorkflowTypes.js';
+import { generateExecutionId } from './scheduledWorkflowTypes.js';
 import {
   getEnabledWorkflows,
   recordExecution,
@@ -145,13 +142,13 @@ class WorkflowScheduler {
     };
 
     await recordExecution(execution);
-    await updateWorkflowAfterExecution(workflow.id, success, errorMessage);
+    await updateWorkflowAfterExecution(workflow.id);
 
     // Notify callbacks
     this.notifyExecutionCallbacks(execution);
 
     console.log(
-      `Workflow ${success ? 'completed' : 'failed'}: ${workflow.name} (${actionsExecuted}/${workflow.actions.length} actions, ${duration}ms)`
+      `Workflow ${success ? 'completed' : 'failed'}: ${workflow.name} (${actionsExecuted}/${workflow.actions.length} actions, ${duration}ms)`,
     );
   }
 

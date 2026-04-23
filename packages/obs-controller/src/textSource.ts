@@ -31,7 +31,7 @@ export class TextSourceController {
       });
 
       const existingItem = sceneItems.sceneItems.find(
-        (item: any) => item.sourceName === settings.sourceName
+        (item: { sourceName: string; sceneItemId: number }) => item.sourceName === settings.sourceName,
       );
 
       if (!existingItem) {
@@ -72,9 +72,7 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = sceneItems.sceneItems.find(
-        (item: any) => item.sourceName === sourceName
-      );
+      const item = sceneItems.sceneItems.find((item: { sourceName: string; sceneItemId: number }) => item.sourceName === sourceName);
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
@@ -98,9 +96,7 @@ export class TextSourceController {
         sceneName: this.sceneName,
       });
 
-      const item = sceneItems.sceneItems.find(
-        (item: any) => item.sourceName === sourceName
-      );
+      const item = sceneItems.sceneItems.find((item: { sourceName: string; sceneItemId: number }) => item.sourceName === sourceName);
 
       if (item) {
         await this.obs.call('SetSceneItemEnabled', {
@@ -147,7 +143,7 @@ export class TextSourceController {
   /**
    * Build OBS text source settings
    */
-  private buildTextSettings(settings: OBSTextSourceSettings): any {
+  private buildTextSettings(settings: OBSTextSourceSettings): Record<string, unknown> {
     return {
       text: settings.text,
       font: {

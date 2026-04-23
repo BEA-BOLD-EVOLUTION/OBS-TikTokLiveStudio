@@ -70,7 +70,10 @@ if (appContainer) {
   transitionContainer.id = 'transition-library-container';
   appContainer.appendChild(transitionContainer);
 
-  const transitionLibrary = new TransitionLibraryUI('transition-library-container', transitionPlayer);
+  const transitionLibrary = new TransitionLibraryUI(
+    'transition-library-container',
+    transitionPlayer,
+  );
   transitionLibrary.render();
 
   // Add Cohost Tracking OCR (Phase 2 - Creator Workflows)
@@ -137,4 +140,6 @@ if (appContainer) {
   autoBackupEngine.setOBSController(obsUI.getController());
 }
 
-console.log('Guided web UI loaded: creator-focused setup experience ready with OBS integration, Go Live Sequence, Lower Thirds, AI Transition Sequences, Cohost Tracking OCR, Scene Recommendations, Scheduled Workflows, Adaptive Quality, Audio Ducking, and Auto-Backup Recordings.');
+console.log(
+  'Guided web UI loaded: creator-focused setup experience ready with OBS integration, Go Live Sequence, Lower Thirds, AI Transition Sequences, Cohost Tracking OCR, Scene Recommendations, Scheduled Workflows, Adaptive Quality, Audio Ducking, and Auto-Backup Recordings.',
+);

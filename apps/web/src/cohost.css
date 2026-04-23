@@ -9,7 +9,12 @@
   padding: 20px;
   margin-top: 20px;
   color: #e5e7eb;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 }
 
 .cohost-header {
@@ -29,7 +34,7 @@
 }
 
 .btn-toggle-history {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -62,7 +67,7 @@
   margin: 0 0 10px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .instruction {
@@ -74,7 +79,7 @@
 
 /* Drop Zone */
 .drop-zone {
-  border: 2px dashed #3B82F6;
+  border: 2px dashed #3b82f6;
   border-radius: 8px;
   padding: 40px;
   text-align: center;
@@ -176,7 +181,7 @@
 }
 
 .btn-skip-crop {
-  background: #3B82F6;
+  background: #3b82f6;
   color: white;
 }
 
@@ -242,7 +247,7 @@
 
 .alert-new {
   background: rgba(59, 130, 246, 0.15);
-  border-left: 4px solid #3B82F6;
+  border-left: 4px solid #3b82f6;
   color: #93c5fd;
 }
 
@@ -281,12 +286,12 @@
 
 .btn-quick-note:hover {
   background: #4b5563;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .btn-quick-note.selected {
   background: rgba(59, 130, 246, 0.2);
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   color: #60a5fa;
 }
 
@@ -316,7 +321,7 @@
 
 .custom-note-input textarea:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .save-actions {
@@ -338,7 +343,7 @@
 }
 
 .btn-save-cohost {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
 }
 
@@ -388,7 +393,7 @@
 
 #search-history:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .checkbox-label {
@@ -441,7 +446,7 @@
 .stat-value {
   font-size: 32px;
   font-weight: 700;
-  color: #3B82F6;
+  color: #3b82f6;
   margin-bottom: 5px;
 }
 
@@ -475,7 +480,7 @@
 }
 
 .history-item:hover {
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   transform: translateY(-2px);
 }
 
@@ -596,7 +601,7 @@
 }
 
 .notification-info {
-  background: #3B82F6;
+  background: #3b82f6;
   color: white;
 }
 

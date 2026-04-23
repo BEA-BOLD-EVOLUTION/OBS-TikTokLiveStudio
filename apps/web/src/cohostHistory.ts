@@ -35,7 +35,7 @@ export async function initDatabase(): Promise<IDBDatabase> {
       // Create cohosts object store if it doesn't exist
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        
+
         // Create indexes for querying
         store.createIndex('username', 'username', { unique: false });
         store.createIndex('lastSeen', 'lastSeen', { unique: false });
@@ -63,12 +63,12 @@ export async function addCohostRecord(
   imageDataUrl?: string,
 ): Promise<CohostRecord> {
   const db = await initDatabase();
-  
+
   const normalized = normalizeUsername(username);
-  
+
   // Check if cohost already exists
   const existing = await getCohostByUsername(normalized);
-  
+
   if (existing) {
     // Update existing record
     return updateCohostRecord(existing.id, {
@@ -241,9 +241,7 @@ function filterCohostRecords(records: CohostRecord[], filter: CohostFilter): Coh
 
   // Filter by tags
   if (filter.tags && filter.tags.length > 0) {
-    filtered = filtered.filter((record) =>
-      filter.tags!.some((tag) => record.notes.includes(tag)),
-    );
+    filtered = filtered.filter((record) => filter.tags!.some((tag) => record.notes.includes(tag)));
   }
 
   // Filter blocked cohosts
@@ -270,9 +268,7 @@ export async function getCohostStats(): Promise<CohostStats> {
     usernameCounts.set(record.username, count + record.streamCount);
   });
 
-  let mostFrequentCohost:
-    | { username: string; count: number }
-    | undefined = undefined;
+  let mostFrequentCohost: { username: string; count: number } | undefined = undefined;
   let maxCount = 0;
   usernameCounts.forEach((count, username) => {
     if (count > maxCount) {
@@ -282,8 +278,7 @@ export async function getCohostStats(): Promise<CohostStats> {
   });
 
   const totalStreamCount = records.reduce((sum, r) => sum + r.streamCount, 0);
-  const averageStreamCount =
-    records.length > 0 ? totalStreamCount / records.length : 0;
+  const averageStreamCount = records.length > 0 ? totalStreamCount / records.length : 0;
 
   return {
     totalCohosts: records.length,

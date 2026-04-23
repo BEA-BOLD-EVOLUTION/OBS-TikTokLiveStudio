@@ -49,7 +49,7 @@
 }
 
 .btn-scheduler-toggle.active {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .btn-scheduler-toggle:hover {
@@ -59,7 +59,7 @@
 
 .btn-show-history,
 .btn-create-workflow {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -95,7 +95,7 @@
 }
 
 .workflow-card:hover {
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
@@ -105,7 +105,7 @@
   align-items: flex-start;
   margin-bottom: 16px;
   padding-left: 12px;
-  border-left: 4px solid #3B82F6;
+  border-left: 4px solid #3b82f6;
 }
 
 .workflow-info h3 {
@@ -164,7 +164,7 @@
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .toggle-switch input:checked + .toggle-slider:before {
@@ -198,7 +198,7 @@
 }
 
 .detail-value.highlight {
-  color: #3B82F6;
+  color: #3b82f6;
   font-weight: 600;
 }
 
@@ -223,25 +223,25 @@
 
 .btn-workflow-action:hover:not(:disabled) {
   background: #374151;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .btn-workflow-action.btn-edit:hover {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .btn-workflow-action.btn-trigger:hover {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  border-color: #10B981;
+  border-color: #10b981;
 }
 
 .btn-workflow-action.btn-delete:hover {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  border-color: #EF4444;
+  border-color: #ef4444;
 }
 
 .btn-workflow-action:disabled {
@@ -279,11 +279,11 @@
 }
 
 .execution-row.success {
-  border-left-color: #10B981;
+  border-left-color: #10b981;
 }
 
 .execution-row.failed {
-  border-left-color: #EF4444;
+  border-left-color: #ef4444;
 }
 
 .execution-row:hover {
@@ -307,11 +307,11 @@
 }
 
 .execution-row.success .execution-status {
-  color: #10B981;
+  color: #10b981;
 }
 
 .execution-row.failed .execution-status {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .execution-duration {
@@ -323,7 +323,7 @@
 .execution-error {
   grid-column: 1 / -1;
   font-size: 0.85rem;
-  color: #EF4444;
+  color: #ef4444;
   padding: 8px;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 4px;
@@ -434,7 +434,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -471,7 +471,7 @@
 
 .color-option.selected {
   border-color: #ffffff;
-  box-shadow: 0 0 0 2px #3B82F6;
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .day-picker {
@@ -495,7 +495,7 @@
 }
 
 .day-option:hover {
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   background: #1a1d29;
 }
 
@@ -532,7 +532,7 @@
 }
 
 .btn-remove-action {
-  background: #EF4444;
+  background: #ef4444;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -543,11 +543,11 @@
 }
 
 .btn-remove-action:hover {
-  background: #DC2626;
+  background: #dc2626;
 }
 
 .btn-add-action {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -593,7 +593,7 @@
 }
 
 .btn-save-workflow {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
 }
 
@@ -640,17 +640,17 @@
 }
 
 .notification-info {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
 }
 
 .notification-success {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
 }
 
 .notification-error {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
 }
 

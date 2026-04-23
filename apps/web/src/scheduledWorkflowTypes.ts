@@ -45,26 +45,33 @@ export type RecurrenceType = 'once' | 'daily' | 'weekly' | 'interval';
 /**
  * Days of week for weekly recurrence
  */
-export type DayOfWeek = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+export type DayOfWeek =
+  | 'sunday'
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday';
 
 /**
  * Schedule configuration for when workflow should run
  */
 export interface WorkflowSchedule {
   type: RecurrenceType;
-  
+
   // For 'once' and 'daily'
   time?: string; // HH:mm format (e.g., "14:30")
-  
+
   // For 'once' only
   date?: string; // YYYY-MM-DD format
-  
+
   // For 'weekly'
   daysOfWeek?: DayOfWeek[]; // Which days to run
-  
+
   // For 'interval'
   intervalMinutes?: number; // Run every N minutes
-  
+
   // Optional time window (only run during these hours)
   startTime?: string; // HH:mm format
   endTime?: string; // HH:mm format
@@ -80,17 +87,17 @@ export interface ScheduledWorkflow {
   enabled: boolean;
   schedule: WorkflowSchedule;
   actions: WorkflowAction[];
-  
+
   // Metadata
   createdAt: Date;
   lastModified: Date;
   lastExecuted?: Date;
   nextExecution?: Date;
   executionCount: number;
-  
+
   // Color coding for visual organization
   color?: string; // Hex color
-  
+
   // Tags for filtering
   tags: string[];
 }
@@ -207,14 +214,14 @@ export function generateExecutionId(): string {
 export function parseTime(timeStr: string): { hours: number; minutes: number } | null {
   const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return null;
-  
+
   const hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
-  
+
   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
     return null;
   }
-  
+
   return { hours, minutes };
 }
 
@@ -228,38 +235,41 @@ export function formatTime(hours: number, minutes: number): string {
 /**
  * Calculate next execution time for a workflow
  */
-export function calculateNextExecution(schedule: WorkflowSchedule, fromDate: Date = new Date()): Date | null {
+export function calculateNextExecution(
+  schedule: WorkflowSchedule,
+  fromDate: Date = new Date(),
+): Date | null {
   const now = new Date(fromDate);
-  
+
   switch (schedule.type) {
     case 'once': {
       if (!schedule.date || !schedule.time) return null;
-      
+
       const [year, month, day] = schedule.date.split('-').map(Number);
       const time = parseTime(schedule.time);
       if (!time) return null;
-      
+
       const executionDate = new Date(year, month - 1, day, time.hours, time.minutes, 0, 0);
-      
+
       // If execution time has passed, return null (won't execute again)
       if (executionDate <= now) return null;
-      
+
       return executionDate;
     }
-    
+
     case 'daily': {
       if (!schedule.time) return null;
       const time = parseTime(schedule.time);
       if (!time) return null;
-      
+
       const nextExec = new Date(now);
       nextExec.setHours(time.hours, time.minutes, 0, 0);
-      
+
       // If today's execution time has passed, schedule for tomorrow
       if (nextExec <= now) {
         nextExec.setDate(nextExec.getDate() + 1);
       }
-      
+
       // Check time window if specified
       if (schedule.startTime && schedule.endTime) {
         const start = parseTime(schedule.startTime);
@@ -270,24 +280,24 @@ export function calculateNextExecution(schedule: WorkflowSchedule, fromDate: Dat
           const execTime = execHour * 60 + execMinute;
           const startMinutes = start.hours * 60 + start.minutes;
           const endMinutes = end.hours * 60 + end.minutes;
-          
+
           if (execTime < startMinutes || execTime > endMinutes) {
             return null; // Outside time window
           }
         }
       }
-      
+
       return nextExec;
     }
-    
+
     case 'weekly': {
       if (!schedule.time || !schedule.daysOfWeek || schedule.daysOfWeek.length === 0) {
         return null;
       }
-      
+
       const time = parseTime(schedule.time);
       if (!time) return null;
-      
+
       const dayMap: Record<DayOfWeek, number> = {
         sunday: 0,
         monday: 1,
@@ -297,47 +307,47 @@ export function calculateNextExecution(schedule: WorkflowSchedule, fromDate: Dat
         friday: 5,
         saturday: 6,
       };
-      
-      const targetDays = schedule.daysOfWeek.map(d => dayMap[d]).sort((a, b) => a - b);
+
+      const targetDays = schedule.daysOfWeek.map((d) => dayMap[d]).sort((a, b) => a - b);
       const currentDay = now.getDay();
-      
+
       // Find next matching day
       let daysUntilNext = 0;
       let foundDay = false;
-      
+
       for (const targetDay of targetDays) {
         let diff = targetDay - currentDay;
         if (diff < 0) diff += 7;
-        
+
         const candidateDate = new Date(now);
         candidateDate.setDate(candidateDate.getDate() + diff);
         candidateDate.setHours(time.hours, time.minutes, 0, 0);
-        
+
         if (candidateDate > now) {
           daysUntilNext = diff;
           foundDay = true;
           break;
         }
       }
-      
+
       // If no valid day found this week, take first day next week
       if (!foundDay) {
         daysUntilNext = 7 - currentDay + targetDays[0];
       }
-      
+
       const nextExec = new Date(now);
       nextExec.setDate(nextExec.getDate() + daysUntilNext);
       nextExec.setHours(time.hours, time.minutes, 0, 0);
-      
+
       return nextExec;
     }
-    
+
     case 'interval': {
       if (!schedule.intervalMinutes) return null;
-      
+
       const nextExec = new Date(now);
       nextExec.setMinutes(nextExec.getMinutes() + schedule.intervalMinutes);
-      
+
       // Check time window if specified
       if (schedule.startTime && schedule.endTime) {
         const start = parseTime(schedule.startTime);
@@ -348,7 +358,7 @@ export function calculateNextExecution(schedule: WorkflowSchedule, fromDate: Dat
           const execTime = execHour * 60 + execMinute;
           const startMinutes = start.hours * 60 + start.minutes;
           const endMinutes = end.hours * 60 + end.minutes;
-          
+
           if (execTime < startMinutes || execTime > endMinutes) {
             // Move to start of next time window
             const tomorrow = new Date(nextExec);
@@ -358,10 +368,10 @@ export function calculateNextExecution(schedule: WorkflowSchedule, fromDate: Dat
           }
         }
       }
-      
+
       return nextExec;
     }
-    
+
     default:
       return null;
   }
@@ -386,26 +396,28 @@ export function getScheduleDescription(schedule: WorkflowSchedule): string {
         return `Once on ${schedule.date} at ${schedule.time}`;
       }
       return 'Once (not configured)';
-    
+
     case 'daily':
       if (schedule.time) {
         return `Daily at ${schedule.time}`;
       }
       return 'Daily (not configured)';
-    
+
     case 'weekly':
       if (schedule.daysOfWeek && schedule.time) {
-        const days = schedule.daysOfWeek.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ');
+        const days = schedule.daysOfWeek
+          .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+          .join(', ');
         return `Weekly on ${days} at ${schedule.time}`;
       }
       return 'Weekly (not configured)';
-    
+
     case 'interval':
       if (schedule.intervalMinutes) {
         return `Every ${schedule.intervalMinutes} minutes`;
       }
       return 'Interval (not configured)';
-    
+
     default:
       return 'Unknown schedule';
   }
@@ -414,17 +426,20 @@ export function getScheduleDescription(schedule: WorkflowSchedule): string {
 /**
  * Validate workflow configuration
  */
-export function validateWorkflow(workflow: Partial<ScheduledWorkflow>): { valid: boolean; errors: string[] } {
+export function validateWorkflow(workflow: Partial<ScheduledWorkflow>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
-  
+
   if (!workflow.name || workflow.name.trim() === '') {
     errors.push('Workflow name is required');
   }
-  
+
   if (!workflow.actions || workflow.actions.length === 0) {
     errors.push('At least one action is required');
   }
-  
+
   if (!workflow.schedule) {
     errors.push('Schedule configuration is required');
   } else {
@@ -434,18 +449,18 @@ export function validateWorkflow(workflow: Partial<ScheduledWorkflow>): { valid:
         if (!workflow.schedule.date) errors.push('Date is required for one-time workflows');
         if (!workflow.schedule.time) errors.push('Time is required for one-time workflows');
         break;
-      
+
       case 'daily':
         if (!workflow.schedule.time) errors.push('Time is required for daily workflows');
         break;
-      
+
       case 'weekly':
         if (!workflow.schedule.daysOfWeek || workflow.schedule.daysOfWeek.length === 0) {
           errors.push('At least one day is required for weekly workflows');
         }
         if (!workflow.schedule.time) errors.push('Time is required for weekly workflows');
         break;
-      
+
       case 'interval':
         if (!workflow.schedule.intervalMinutes || workflow.schedule.intervalMinutes <= 0) {
           errors.push('Valid interval minutes required for interval workflows');
@@ -453,7 +468,7 @@ export function validateWorkflow(workflow: Partial<ScheduledWorkflow>): { valid:
         break;
     }
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,

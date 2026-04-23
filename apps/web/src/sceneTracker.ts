@@ -34,12 +34,11 @@ export class SceneTracker {
 
     this.isTracking = true;
 
-    // Subscribe to scene change events
-    if (this.obsController.connection.on) {
-      this.obsController.connection.on('CurrentProgramSceneChanged', async (data: { sceneName: string }) => {
-        await this.handleSceneChange(data.sceneName);
-      });
-    }
+    // Subscribe to scene change events via raw OBS instance
+    const obs = this.obsController.getOBS();
+    obs.on('CurrentProgramSceneChanged', async (data: { sceneName: string }) => {
+      await this.handleSceneChange(data.sceneName);
+    });
 
     // Get initial scene
     this.getCurrentScene();
@@ -52,9 +51,9 @@ export class SceneTracker {
     if (!this.obsController) return;
 
     try {
-      const response = await this.obsController.connection.call('GetCurrentProgramScene');
-      if (response && response.sceneName) {
-        this.currentScene = response.sceneName;
+      const currentScene = await this.obsController.scenes.getCurrentScene();
+      if (currentScene) {
+        this.currentScene = currentScene;
         this.sceneStartTime = Date.now();
       }
     } catch (error) {
@@ -85,7 +84,9 @@ export class SceneTracker {
         sessionId: this.sessionId,
       });
 
-      console.log(`Scene switch tracked: ${this.currentScene} → ${newScene} (${(duration / 1000).toFixed(1)}s)`);
+      console.log(
+        `Scene switch tracked: ${this.currentScene} → ${newScene} (${(duration / 1000).toFixed(1)}s)`,
+      );
     } catch (error) {
       console.error('Failed to record scene switch:', error);
     }

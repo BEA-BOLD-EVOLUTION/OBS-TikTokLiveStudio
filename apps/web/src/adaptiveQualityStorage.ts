@@ -13,7 +13,7 @@ import type {
   NetworkQuality,
   QualityPreset,
 } from './adaptiveQualityTypes.js';
-import { DEFAULT_ADAPTIVE_CONFIG, DEFAULT_QUALITY_PRESETS } from './adaptiveQualityTypes.js';
+import { DEFAULT_ADAPTIVE_CONFIG } from './adaptiveQualityTypes.js';
 
 const DB_NAME = 'AdaptiveQualityDB';
 const DB_VERSION = 1;
@@ -90,7 +90,7 @@ export async function recordNetworkMetrics(metrics: NetworkMetrics): Promise<voi
  */
 export async function getNetworkMetrics(
   startTime: Date,
-  endTime: Date = new Date()
+  endTime: Date = new Date(),
 ): Promise<NetworkMetrics[]> {
   const db = await initDatabase();
   return new Promise((resolve, reject) => {
@@ -99,7 +99,7 @@ export async function getNetworkMetrics(
     const request = store.getAll();
 
     request.onsuccess = () => {
-      const allMetrics = request.result as any[];
+      const allMetrics = request.result as Array<NetworkMetrics & { timestamp: string }>;
       const filtered = allMetrics
         .filter((m) => {
           const timestamp = new Date(m.timestamp);
@@ -125,7 +125,7 @@ export async function getLatestNetworkMetrics(count: number = 1): Promise<Networ
     const store = transaction.objectStore(METRICS_STORE);
     const request = store.openCursor(null, 'prev');
 
-    const results: any[] = [];
+    const results: Array<NetworkMetrics & { timestamp: string }> = [];
 
     request.onsuccess = (event) => {
       const cursor = (event.target as IDBRequest).result;
@@ -137,7 +137,7 @@ export async function getLatestNetworkMetrics(count: number = 1): Promise<Networ
           results.map((m) => ({
             ...m,
             timestamp: new Date(m.timestamp),
-          }))
+          })),
         );
       }
     };
@@ -212,12 +212,13 @@ export async function getAllAdjustments(): Promise<QualityAdjustment[]> {
     const request = store.getAll();
 
     request.onsuccess = () => {
-      const adjustments = request.result.map((a: any) => ({
-        ...a,
-        timestamp: new Date(a.timestamp),
-        networkMetrics: {
-          ...a.networkMetrics,
-          timestamp: new Date(a.networkMetrics.timestamp),
+      const adjustments = request.result.map(
+        (a: QualityAdjustment & { timestamp: string; networkMetrics: NetworkMetrics & { timestamp: string } }) => ({
+          ...a,
+          timestamp: new Date(a.timestamp),
+          networkMetrics: {
+            ...a.networkMetrics,
+            timestamp: new Date(a.networkMetrics.timestamp),
         },
       }));
       resolve(adjustments);
@@ -231,7 +232,7 @@ export async function getAllAdjustments(): Promise<QualityAdjustment[]> {
  */
 export async function getQualityAdjustments(
   startTime: Date,
-  endTime: Date = new Date()
+  endTime: Date = new Date(),
 ): Promise<QualityAdjustment[]> {
   const allAdjustments = await getAllAdjustments();
   return allAdjustments.filter((a) => a.timestamp >= startTime && a.timestamp <= endTime);
@@ -242,7 +243,9 @@ export async function getQualityAdjustments(
  */
 export async function getRecentAdjustments(count: number = 10): Promise<QualityAdjustment[]> {
   const allAdjustments = await getAllAdjustments();
-  return allAdjustments.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, count);
+  return allAdjustments
+    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+    .slice(0, count);
 }
 
 /**
@@ -316,7 +319,7 @@ export async function getConfig(): Promise<AdaptiveQualityConfig> {
  */
 async function calculateQualityStability(
   adjustments: QualityAdjustment[],
-  timeWindowMs: number
+  timeWindowMs: number,
 ): Promise<QualityStability> {
   if (adjustments.length === 0) {
     return {
@@ -359,7 +362,8 @@ async function calculateQualityStability(
   timeAtPreset[lastAdjustment.toPreset] += timeSinceLast;
 
   // Calculate average time between adjustments
-  const totalTimeBetween = sorted[sorted.length - 1].timestamp.getTime() - sorted[0].timestamp.getTime();
+  const totalTimeBetween =
+    sorted[sorted.length - 1].timestamp.getTime() - sorted[0].timestamp.getTime();
   const avgTimeBetweenAdjustments = totalTimeBetween / (sorted.length - 1) / 60000; // in minutes
 
   // Calculate optimal time percentage (high and ultra presets)
@@ -408,9 +412,9 @@ async function calculateNetworkPerformance(metrics: NetworkMetrics[]): Promise<N
     qualityCounts[m.quality]++;
   });
 
-  const mostCommonQuality = (
-    Object.entries(qualityCounts).sort((a, b) => b[1] - a[1])[0][0]
-  ) as NetworkQuality;
+  const mostCommonQuality = Object.entries(qualityCounts).sort(
+    (a, b) => b[1] - a[1],
+  )[0][0] as NetworkQuality;
 
   return {
     avgBandwidthKbps,
@@ -425,7 +429,9 @@ async function calculateNetworkPerformance(metrics: NetworkMetrics[]): Promise<N
 /**
  * Calculate complete analytics
  */
-export async function calculateAnalytics(timeWindowHours: number = 24): Promise<AdaptiveQualityAnalytics> {
+export async function calculateAnalytics(
+  timeWindowHours: number = 24,
+): Promise<AdaptiveQualityAnalytics> {
   const startTime = new Date(Date.now() - timeWindowHours * 60 * 60 * 1000);
   const endTime = new Date();
 
@@ -461,7 +467,10 @@ export async function calculateAnalytics(timeWindowHours: number = 24): Promise<
 export async function clearAllData(): Promise<void> {
   const db = await initDatabase();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction([METRICS_STORE, ADJUSTMENTS_STORE, CONFIG_STORE], 'readwrite');
+    const transaction = db.transaction(
+      [METRICS_STORE, ADJUSTMENTS_STORE, CONFIG_STORE],
+      'readwrite',
+    );
 
     const metricsStore = transaction.objectStore(METRICS_STORE);
     const adjustmentsStore = transaction.objectStore(ADJUSTMENTS_STORE);

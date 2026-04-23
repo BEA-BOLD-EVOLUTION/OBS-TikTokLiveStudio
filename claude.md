@@ -67,7 +67,6 @@ OBS-TikTokLiveStudio/
 **Packages Created:**
 
 1. **`packages/obs-controller`** - TypeScript OBS client library
-
    - `OBSConnectionManager`: WebSocket connection with auto-reconnect (max 5 attempts, 3-second delay)
    - `SceneController`: Scene switching with `SCN_` prefix support
    - `RecordingController`: Start/stop/pause recording and streaming
@@ -87,13 +86,11 @@ OBS-TikTokLiveStudio/
 **Key Technical Decisions:**
 
 - ✅ **OBS WebSocket API** (not full obs-studio source)
-
   - Rationale: obs-studio is 100k+ lines of C++ unnecessary for remote control
   - WebSocket API provides full control without complexity
   - Architecture: Creator → Web UI → OBS WebSocket → OBS Studio → Virtual Camera → TikTok Live Studio
 
 - ✅ **npm workspaces** over complex monorepo tools
-
   - Minimal dependencies, easier maintenance
   - Built-in npm features sufficient for project scale
 
@@ -817,13 +814,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md#dependency-update-policy) for complete tes
        - releasing → idle: When volume restored to original levels
      - Ducking application workflow:
        - `applyDucking()`: Get enabled audio sources from storage
-       - Calculate target volume: originalVolume * (1 - duckAmount) for each source
+       - Calculate target volume: originalVolume \* (1 - duckAmount) for each source
        - Apply with smooth ramping: Linear interpolation over attackTime (100ms)
        - Call `setSourceVolume(sourceName, targetVolume)` for each source
        - Record DuckingEvent with type 'duck-started', voice metrics, source list
      - Volume restoration workflow:
        - `releaseDucking()`: Smooth ramp back to originalVolume over releaseTime (500ms)
-       - Linear interpolation for each source: currentVolume + (originalVolume - currentVolume) * (elapsed / releaseTime)
+       - Linear interpolation for each source: currentVolume + (originalVolume - currentVolume) \* (elapsed / releaseTime)
        - Record DuckingEvent with type 'duck-completed'
      - OBS audio control: `setSourceVolume(sourceName, volume)` - placeholder with TODO comment
        - Note: "Need to implement obs-websocket audio filter APIs (SetSourceFilterSettings or SetInputVolume)"
@@ -1115,6 +1112,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md#dependency-update-policy) for complete tes
 **Phase 3 Summary:**
 
 ✅ **Phase 3: Intelligent Automation COMPLETE (5/5 Features):**
+
 1. Scene Recommendations - AI-driven scene suggestions based on streaming patterns
 2. Scheduled Workflows - Time-based workflow automation with multi-action sequences
 3. Adaptive Quality - Automatic bitrate adjustment based on network conditions
@@ -1122,6 +1120,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md#dependency-update-policy) for complete tes
 5. Auto-Backup Recordings - Intelligent recording management with multi-location backup
 
 **Total Phase 3 Implementation:**
+
 - **25 TypeScript files** created: Types, storage, engines, UI components for all 5 features
 - **~5,500+ lines TypeScript code**: Complete implementation across all features
 - **~3,200+ lines CSS styles**: Dark theme UI for all features
@@ -1295,21 +1294,18 @@ OBS_PASSWORD=           # Leave empty if no password
 Based on real creator pain points discovered during development:
 
 1. **AI Transition Sandwiches:**
-
    - Creators use "transform" animations (not fades)
    - Single baked MP4 file contains: transform-out + content + transform-in
    - Many creators have 20+ different transition videos
    - OBS lacks visual organization (no color coding, grouping)
 
 2. **TikTok Live Cohosting:**
-
    - TikTok uses native cohost feature (not Zoom/Discord)
    - Cohost username appears in consistent screen location (perfect for OCR automation)
    - Creators need instant decision-making during live streams
    - Returning cohost detection prevents matching with previously blocked users
 
 3. **Section-Based Organization:**
-
    - Creators need distinct categories: Topic Changes, Sponsors, BRB, Quick Reactions, Intros, Outros
    - Want unlimited custom sections for specific workflows
    - Default sections should be hideable but not deletable (avoid accidents)

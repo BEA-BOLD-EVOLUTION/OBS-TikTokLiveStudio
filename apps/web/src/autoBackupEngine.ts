@@ -12,11 +12,9 @@ import type {
   UploadQueueEntry,
   BackupState,
   UploadProgressEvent,
-  SPLIT_INTERVAL_MS,
 } from './autoBackupTypes.js';
 import {
   generateRecordId,
-  generateQueueId,
   formatFileName,
   calculateRetryDelay,
   DEFAULT_BACKUP_CONFIG,
@@ -28,7 +26,6 @@ import {
   getBackupRecord,
   getEnabledBackupLocations,
   addToUploadQueue,
-  getQueueEntry,
   removeFromUploadQueue,
   getReadyQueueEntries,
 } from './autoBackupStorage.js';
@@ -42,22 +39,18 @@ export class AutoBackupEngine {
   private state: BackupState = {
     isRecording: false,
     isPaused: false,
-    currentRecordId: null,
-    currentFilePath: null,
-    recordingStartTime: null,
-    splitTimer: null,
+    currentRecordId: undefined,
+    currentFilePath: undefined,
+    recordingStartTime: undefined,
+    splitTimer: undefined,
     splitIndex: 0,
-    queueProcessorInterval: null,
+    queueProcessorInterval: undefined,
   };
 
   // Callback subscriptions
   private stateChangeCallbacks = new Set<(state: BackupState) => void>();
-  private uploadProgressCallbacks = new Set<
-    (event: UploadProgressEvent) => void
-  >();
-  private backupCompleteCallbacks = new Set<
-    (recordId: string, success: boolean) => void
-  >();
+  private uploadProgressCallbacks = new Set<(event: UploadProgressEvent) => void>();
+  private backupCompleteCallbacks = new Set<(recordId: string, success: boolean) => void>();
 
   constructor() {
     this.loadConfig();
@@ -196,8 +189,7 @@ export class AutoBackupEngine {
         const record = await getBackupRecord(this.state.currentRecordId);
         if (record) {
           record.endTime = new Date();
-          record.duration =
-            (record.endTime.getTime() - record.startTime.getTime()) / 1000;
+          record.duration = (record.endTime.getTime() - record.startTime.getTime()) / 1000;
 
           // TODO: Get actual file path and size from OBS
           // For now, use placeholder values
@@ -214,9 +206,9 @@ export class AutoBackupEngine {
       // Reset state
       this.state.isRecording = false;
       this.state.isPaused = false;
-      this.state.currentRecordId = null;
-      this.state.currentFilePath = null;
-      this.state.recordingStartTime = null;
+      this.state.currentRecordId = undefined;
+      this.state.currentFilePath = undefined;
+      this.state.recordingStartTime = undefined;
       this.state.splitIndex = 0;
 
       this.notifyStateChange();
@@ -323,9 +315,7 @@ export class AutoBackupEngine {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Start new recording with same scene
-      const currentRecord = await getBackupRecord(
-        this.state.currentRecordId || '',
-      );
+      const currentRecord = await getBackupRecord(this.state.currentRecordId || '');
       await this.startRecording(currentRecord?.sceneName);
     } catch (error) {
       console.error('Failed to execute split:', error);
@@ -372,16 +362,10 @@ export class AutoBackupEngine {
     }
 
     // Update overall status
-    const allCompleted = record.locations.every(
-      (loc) => loc.status === 'completed',
-    );
+    const allCompleted = record.locations.every((loc) => loc.status === 'completed');
     const anyFailed = record.locations.some((loc) => loc.status === 'failed');
 
-    record.overallStatus = allCompleted
-      ? 'completed'
-      : anyFailed
-        ? 'failed'
-        : 'pending';
+    record.overallStatus = allCompleted ? 'completed' : anyFailed ? 'failed' : 'pending';
 
     await saveBackupRecord(record);
     this.notifyBackupComplete(recordId, allCompleted);
@@ -390,13 +374,8 @@ export class AutoBackupEngine {
   /**
    * Backup to a specific location
    */
-  private async backupToLocation(
-    record: BackupRecord,
-    location: BackupLocation,
-  ): Promise<void> {
-    const locationStatus = record.locations.find(
-      (loc) => loc.locationId === location.id,
-    );
+  private async backupToLocation(record: BackupRecord, location: BackupLocation): Promise<void> {
+    const locationStatus = record.locations.find((loc) => loc.locationId === location.id);
     if (!locationStatus) {
       return;
     }
@@ -407,9 +386,7 @@ export class AutoBackupEngine {
     try {
       if (location.type === 'local' || location.type === 'network') {
         // File system copy (placeholder - needs Node.js fs or Electron)
-        console.log(
-          `[PLACEHOLDER] Copying file to ${location.type} path: ${location.path}`,
-        );
+        console.log(`[PLACEHOLDER] Copying file to ${location.type} path: ${location.path}`);
         await this.simulateFileCopy(record, location, locationStatus);
       } else if (location.type === 'cloud') {
         // Cloud upload
@@ -433,10 +410,7 @@ export class AutoBackupEngine {
 
       await saveBackupRecord(record);
     } catch (error) {
-      console.error(
-        `Failed to backup to ${location.displayName}:`,
-        error,
-      );
+      console.error(`Failed to backup to ${location.displayName}:`, error);
       locationStatus.status = 'failed';
       locationStatus.error = error instanceof Error ? error.message : 'Unknown error';
       await saveBackupRecord(record);
@@ -615,9 +589,7 @@ export class AutoBackupEngine {
       return;
     }
 
-    const locationStatus = record.locations.find(
-      (loc) => loc.locationId === entry.locationId,
-    );
+    const locationStatus = record.locations.find((loc) => loc.locationId === entry.locationId);
     if (!locationStatus) {
       await removeFromUploadQueue(entry.recordId);
       return;
@@ -649,9 +621,7 @@ export class AutoBackupEngine {
         console.error('Upload failed after max retries');
       } else {
         // Schedule next retry
-        entry.nextRetryAt = new Date(
-          Date.now() + calculateRetryDelay(entry.retryCount),
-        );
+        entry.nextRetryAt = new Date(Date.now() + calculateRetryDelay(entry.retryCount));
         await addToUploadQueue(entry);
         console.log(`Next retry scheduled for ${entry.nextRetryAt.toISOString()}`);
       }
@@ -680,9 +650,7 @@ export class AutoBackupEngine {
   /**
    * Subscribe to upload progress
    */
-  onUploadProgress(
-    callback: (event: UploadProgressEvent) => void,
-  ): () => void {
+  onUploadProgress(callback: (event: UploadProgressEvent) => void): () => void {
     this.uploadProgressCallbacks.add(callback);
     return () => this.uploadProgressCallbacks.delete(callback);
   }
@@ -690,9 +658,7 @@ export class AutoBackupEngine {
   /**
    * Subscribe to backup completion
    */
-  onBackupComplete(
-    callback: (recordId: string, success: boolean) => void,
-  ): () => void {
+  onBackupComplete(callback: (recordId: string, success: boolean) => void): () => void {
     this.backupCompleteCallbacks.add(callback);
     return () => this.backupCompleteCallbacks.delete(callback);
   }
@@ -716,9 +682,7 @@ export class AutoBackupEngine {
    * Notify backup completion
    */
   private notifyBackupComplete(recordId: string, success: boolean): void {
-    this.backupCompleteCallbacks.forEach((callback) =>
-      callback(recordId, success),
-    );
+    this.backupCompleteCallbacks.forEach((callback) => callback(recordId, success));
   }
 }
 

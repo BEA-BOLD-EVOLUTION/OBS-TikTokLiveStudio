@@ -27,6 +27,162 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 
 ---
 
+## Getting Started
+
+### Prerequisites
+
+Before you begin, install the following on your computer:
+
+1. **Node.js 20+** and **npm 10+**
+   - Download from: <https://nodejs.org/>
+   - Choose the version labeled "LTS" (Long Term Support)
+   - After installing, verify it worked:
+     - Open PowerShell/Terminal (see step 1 in Quick Start below)
+     - Type `node --version` and press Enter. You should see something like `v20.11.0`
+     - Type `npm --version` and press Enter. You should see something like `10.2.4`
+
+2. **OBS Studio** with **obs-websocket** plugin
+   - Download OBS: <https://obsproject.com/>
+   - Download obs-websocket: <https://github.com/obsproject/obs-websocket/releases>
+   - Install both programs using the installer files
+   - After installing, open OBS and configure it:
+     - Click **Tools** at the top menu
+     - Click **WebSocket Server Settings**
+     - Check the box next to "Enable WebSocket server"
+     - Keep Port as **4455** (default)
+     - For now, leave the password blank (easier for testing)
+
+3. **Git** (for cloning the repository)
+   - Download from: <https://git-scm.com/>
+
+### Quick Start (Step-by-Step)
+
+**1. Open a command-line interface:**
+
+This is a text-based window where you type commands to run programs. Here's how to open it on your computer:
+
+- **Windows:**
+  - Press the `Windows` key on your keyboard
+  - Type `PowerShell`
+  - Click on **Windows PowerShell** in the results
+  - A blue window with white text will open
+
+- **macOS:**
+  - Press `Command + Space` to open Spotlight
+  - Type `terminal`
+  - Press `Enter`
+  - A white or black window will open
+
+- **Linux:**
+  - Press `Ctrl + Alt + T`
+  - Or search for "Terminal" in your applications menu
+
+**2. Download the project files:**
+
+In the window you just opened, type or copy-paste this command and press `Enter`:
+
+```bash
+git clone https://github.com/BEA-BOLD-EVOLUTION/OBS-TikTokLiveStudio.git
+```
+
+Wait for it to finish downloading. You'll see progress messages.
+
+**3. Navigate into the project folder:**
+
+Type this command and press `Enter`:
+
+```bash
+cd OBS-TikTokLiveStudio
+```
+
+The text at the beginning of the line should now end with `OBS-TikTokLiveStudio`.
+
+**4. Install all dependencies:**
+
+```bash
+npm install
+```
+
+This will install dependencies for the web dashboard, OBS controller library, and Stream Deck plugin.
+
+**4. Configure OBS connection (optional):**
+
+If you set a password in OBS WebSocket settings, create a `.env` file:
+
+```bash
+# On Windows Command Prompt:
+copy .env.example .env
+
+# On macOS/Linux or Windows PowerShell:
+cp .env.example .env
+```
+
+Then edit `.env` and set your OBS password:
+
+```env
+OBS_HOST=localhost
+OBS_PORT=4455
+OBS_PASSWORD=your_password_here
+```
+
+If you didn't set a password, skip this step.
+
+**5. Start the web dashboard:**
+
+```bash
+npm run dev
+```
+
+This will start the development server. You'll see output like:
+
+```text
+  VITE v8.0.10  ready in 508 ms
+
+  ➜  Local:   http://localhost:5173/
+```
+
+**6. Open your web browser and go to the URL shown** (typically `http://localhost:5173`)
+
+You should see the OBS-TikTok Live Studio control dashboard.
+
+### First Run Verification
+
+After opening the dashboard in your browser:
+
+1. **Check OBS connection status** in the top-left corner
+   - If OBS is running with WebSocket enabled, you'll see a green "Connected" indicator
+   - If not connected, you'll see a red "Disconnected" indicator with an error message
+
+2. **Verify features are loaded:**
+   - Scene Recommendations panel
+   - Scheduled Workflows panel
+   - Adaptive Quality panel
+   - Audio Ducking panel
+   - Auto-Backup Recordings panel
+
+3. **Test a simple action:**
+   - If OBS is connected, try switching scenes from the scene switcher
+   - Or toggle the virtual camera on/off
+
+**Troubleshooting:**
+
+- **"Cannot connect to OBS"**: Make sure OBS is running on your computer. Then check that WebSocket is turned on:
+  - In OBS, click **Tools** at the top
+  - Click **WebSocket Server Settings**
+  - Make sure there's a checkmark next to "Enable WebSocket server"
+  
+- **"Port already in use"**: This is normal. The system will automatically find an available port and show you a different number like `http://localhost:5174/` or `http://localhost:5175/`. Just use whatever URL it shows you.
+
+- **"npm: command not found"** or **"npm is not recognized"**: This means Node.js isn't installed correctly.
+  - Download and install Node.js from <https://nodejs.org/>
+  - After installation, close the PowerShell/Terminal window completely
+  - Open a new PowerShell/Terminal window
+  - Try the commands again
+
+- **The window closes immediately after typing a command**: You might have typed the command incorrectly. Make sure to copy-paste the commands exactly as shown, then press `Enter`.
+
+---
+
 ## Phase 1: Foundation (MVP)
 
 **Goal:** Establish reliable OBS control from web UI and Stream Deck
@@ -45,14 +201,12 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 ### Basic Controls
 
 - [ ] **Scene switching**
-
   - Map config scene IDs → OBS scene names
   - Web UI scene buttons (SCN_STARTING, SCN_LIVE, SCN_BRB, etc.)
   - Stream Deck button mapping
   - Visual feedback (active scene indicator)
 
 - [ ] **Virtual camera control**
-
   - Start/stop virtual camera
   - Status indicator in web UI
   - Stream Deck button integration
@@ -517,7 +671,6 @@ _Search & Filter UI:_
 _Visual Design System:_
 
 - **Colors:**
-
   - Background: `#0a0c14` (dark mode base)
   - Panel: `#1a1d29` (elevated surface)
   - Accent: `#3B82F6` (primary blue)
@@ -526,14 +679,12 @@ _Visual Design System:_
   - Success: `#10B981`, Warning: `#F59E0B`, Error: `#EF4444`
 
 - **Typography:**
-
   - Headers: Inter Bold 16px/20px/24px
   - Body: Inter Regular 14px
   - Labels: Inter Medium 12px
   - Monospace (duration): JetBrains Mono 12px
 
 - **Spacing:**
-
   - Grid gap: 16px
   - Section padding: 24px
   - Card padding: 12px
@@ -551,7 +702,6 @@ _Interaction Patterns:_
 - **Drag-and-drop:** Visual indicator shows drop target (dashed border pulse)
 - **Multi-select:** Shift+click for range, Ctrl/Cmd+click for individual
 - **Keyboard shortcuts:**
-
   - `Ctrl+F` = Focus search
   - `Space` = Play selected transition preview
   - `Del` = Delete selected
@@ -868,6 +1018,65 @@ When creators cohost with other TikTok streamers (using TikTok's native cohost f
 - Generate thumbnail from stream (pick frame or template)
 - Auto-tag with stream date, duration, game/category
 - Add intro/outro bumpers automatically
+
+---
+
+### 📦 Installation & Distribution Automation
+
+**Goal:** Eliminate manual setup steps for creators
+
+**Automated Installation:**
+
+- **One-click installer packages:**
+  - Windows: `.exe` installer that handles everything
+  - macOS: `.dmg` with drag-to-install + auto-setup
+  - Linux: `.AppImage` or `.deb` package
+  
+- **Installation script:**
+  - `install.sh` / `install.ps1` that runs all setup commands automatically
+  - Checks for Node.js, installs if missing
+  - Clones repo, runs `npm install`, starts dev server
+  - Opens browser to dashboard automatically
+
+**Desktop Application:**
+
+- Package as standalone desktop app (Electron or Tauri)
+- No need for users to:
+  - Install Node.js/npm manually
+  - Use command line at all
+  - Understand git/repositories
+- Double-click to launch, works like any other app
+- Auto-updates when new version is available
+
+**OBS Auto-Discovery:**
+
+- Automatically detect OBS running on localhost
+- Auto-connect without manual configuration
+- Show "OBS not detected" prompt with one-click setup wizard
+- No need to edit `.env` files or understand ports/passwords
+
+**First-Run Setup Wizard:**
+
+- Visual step-by-step guide on first launch:
+  - "Welcome to OBS-TikTok Live Studio"
+  - Check if OBS is installed → guide to download if not
+  - Check if OBS WebSocket is enabled → auto-enable via API if possible
+  - Test connection → show success/failure with helpful next steps
+  - Optional: Import existing OBS scenes automatically
+  
+**Why This Matters:**
+
+- Current setup requires: command line knowledge, git, Node.js, manual configuration
+- Automated approach: download, install, click - ready to stream
+- Reduces setup time from 10+ minutes to < 60 seconds
+- Lowers barrier to entry for non-technical creators
+
+**Implementation Priority:**
+
+1. **Phase 5A**: Installation script (`install.sh`/`install.ps1`) for power users
+2. **Phase 5B**: First-run setup wizard in web UI
+3. **Phase 5C**: Desktop app packaging with Electron/Tauri
+4. **Phase 5D**: One-click installers for Windows/macOS
 
 ---
 

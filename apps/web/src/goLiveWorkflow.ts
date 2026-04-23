@@ -3,10 +3,7 @@
  */
 
 import type { OBSController } from '@obs-tiktok/obs-controller';
-import type {
-  GoLiveState,
-  GoLiveConfig,
-} from './goLiveTypes';
+import type { GoLiveState, GoLiveConfig } from './goLiveTypes';
 import {
   DEFAULT_GO_LIVE_CONFIG,
   DEFAULT_PREFLIGHT_CHECKS,
@@ -66,7 +63,7 @@ export class GoLiveWorkflow {
 
       // Check if all required checks passed
       const failedChecks = this.state.preflightChecks.filter(
-        (check) => check.required && check.status === 'failed'
+        (check) => check.required && check.status === 'failed',
       );
       if (failedChecks.length > 0) {
         this.updateState({
@@ -108,7 +105,7 @@ export class GoLiveWorkflow {
 
     // Verify all required checklist items are checked
     const uncheckedRequired = this.state.userChecklist.filter(
-      (item) => item.required && !item.checked
+      (item) => item.required && !item.checked,
     );
     if (uncheckedRequired.length > 0) {
       this.updateState({
@@ -151,7 +148,7 @@ export class GoLiveWorkflow {
    */
   updateChecklistItem(id: string, checked: boolean): void {
     const updatedChecklist = this.state.userChecklist.map((item) =>
-      item.id === id ? { ...item, checked } : item
+      item.id === id ? { ...item, checked } : item,
     );
     this.updateState({ userChecklist: updatedChecklist });
   }
@@ -193,21 +190,22 @@ export class GoLiveWorkflow {
 
       try {
         if (check.id === 'obs-connection') {
-          const isConnected = this.obs?.connection.isConnected() ?? false;
+          const status = this.obs?.getStatus();
+          const isConnected = status?.status === 'connected';
           check.status = isConnected ? 'passed' : 'failed';
           if (!isConnected) {
             check.errorMessage = 'OBS WebSocket not connected';
           }
         } else if (check.id === 'starting-scene') {
-          const scenes = await this.obs!.scenes.getSceneList();
-          const exists = scenes.some((s) => s.name === this.config.startingScene);
+          const scenes = await this.obs!.scenes.getScenes();
+          const exists = scenes.some((s: { name: string }) => s.name === this.config.startingScene);
           check.status = exists ? 'passed' : 'failed';
           if (!exists) {
             check.errorMessage = `Scene "${this.config.startingScene}" not found in OBS`;
           }
         } else if (check.id === 'live-scene') {
-          const scenes = await this.obs!.scenes.getSceneList();
-          const exists = scenes.some((s) => s.name === this.config.liveScene);
+          const scenes = await this.obs!.scenes.getScenes();
+          const exists = scenes.some((s: { name: string }) => s.name === this.config.liveScene);
           check.status = exists ? 'passed' : 'failed';
           if (!exists) {
             check.errorMessage = `Scene "${this.config.liveScene}" not found in OBS`;

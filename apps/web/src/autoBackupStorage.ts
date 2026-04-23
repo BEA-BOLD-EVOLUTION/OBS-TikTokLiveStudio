@@ -10,8 +10,35 @@ import type {
   UploadQueueEntry,
   BackupAnalytics,
   StorageByLocation,
-  DEFAULT_BACKUP_CONFIG,
+  LocationStatus,
 } from './autoBackupTypes.js';
+import { DEFAULT_BACKUP_CONFIG } from './autoBackupTypes.js';
+
+// Serialized types for IndexedDB storage
+type SerializedLocationStatus = Omit<LocationStatus, 'uploadedAt'> & {
+  uploadedAt?: string;
+};
+
+type SerializedRecord = Omit<BackupRecord, 'startTime' | 'endTime' | 'createdAt' | 'locations'> & {
+  startTime: string;
+  endTime?: string;
+  createdAt: string;
+  locations: SerializedLocationStatus[];
+};
+
+type SerializedCloudAuth = {
+  provider: BackupLocation['cloudAuth'] extends { provider: infer P } ? P : never;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+  scope?: string;
+};
+
+type SerializedLocation = Omit<BackupLocation, 'createdAt' | 'lastTestedAt' | 'cloudAuth'> & {
+  createdAt: string;
+  lastTestedAt?: string;
+  cloudAuth?: SerializedCloudAuth;
+};
 
 const DB_NAME = 'AutoBackupDB';
 const DB_VERSION = 1;
@@ -82,7 +109,7 @@ function openDatabase(): Promise<IDBDatabase> {
 /**
  * Serialize dates to ISO strings for storage
  */
-function serializeRecord(record: BackupRecord): any {
+function serializeRecord(record: BackupRecord): SerializedRecord {
   return {
     ...record,
     startTime: record.startTime.toISOString(),
@@ -98,13 +125,13 @@ function serializeRecord(record: BackupRecord): any {
 /**
  * Deserialize ISO strings back to Date objects
  */
-function deserializeRecord(data: any): BackupRecord {
+function deserializeRecord(data: SerializedRecord): BackupRecord {
   return {
     ...data,
     startTime: new Date(data.startTime),
     endTime: data.endTime ? new Date(data.endTime) : undefined,
     createdAt: new Date(data.createdAt),
-    locations: data.locations.map((loc: any) => ({
+    locations: data.locations.map((loc) => ({
       ...loc,
       uploadedAt: loc.uploadedAt ? new Date(loc.uploadedAt) : undefined,
     })),
@@ -114,15 +141,18 @@ function deserializeRecord(data: any): BackupRecord {
 /**
  * Serialize location dates to ISO strings
  */
-function serializeLocation(location: BackupLocation): any {
+function serializeLocation(location: BackupLocation): SerializedLocation {
   return {
     ...location,
     createdAt: location.createdAt.toISOString(),
     lastTestedAt: location.lastTestedAt?.toISOString(),
     cloudAuth: location.cloudAuth
       ? {
-          ...location.cloudAuth,
+          provider: location.cloudAuth.provider,
+          accessToken: location.cloudAuth.accessToken,
+          refreshToken: location.cloudAuth.refreshToken,
           expiresAt: location.cloudAuth.expiresAt.toISOString(),
+          scope: location.cloudAuth.scope,
         }
       : undefined,
   };
@@ -131,7 +161,7 @@ function serializeLocation(location: BackupLocation): any {
 /**
  * Deserialize location ISO strings back to Date objects
  */
-function deserializeLocation(data: any): BackupLocation {
+function deserializeLocation(data: SerializedLocation): BackupLocation {
   return {
     ...data,
     createdAt: new Date(data.createdAt),
@@ -148,7 +178,10 @@ function deserializeLocation(data: any): BackupLocation {
 /**
  * Serialize queue entry dates to ISO strings
  */
-function serializeQueueEntry(entry: UploadQueueEntry): any {
+function serializeQueueEntry(entry: UploadQueueEntry): Omit<UploadQueueEntry, 'nextRetryAt' | 'addedAt'> & {
+  nextRetryAt: string;
+  addedAt: string;
+} {
   return {
     ...entry,
     nextRetryAt: entry.nextRetryAt.toISOString(),
@@ -159,7 +192,10 @@ function serializeQueueEntry(entry: UploadQueueEntry): any {
 /**
  * Deserialize queue entry ISO strings back to Date objects
  */
-function deserializeQueueEntry(data: any): UploadQueueEntry {
+function deserializeQueueEntry(data: Omit<UploadQueueEntry, 'nextRetryAt' | 'addedAt'> & {
+  nextRetryAt: string;
+  addedAt: string;
+}): UploadQueueEntry {
   return {
     ...data,
     nextRetryAt: new Date(data.nextRetryAt),
@@ -174,9 +210,7 @@ function deserializeQueueEntry(data: any): UploadQueueEntry {
 /**
  * Save or update a backup record
  */
-export async function saveBackupRecord(
-  record: BackupRecord,
-): Promise<void> {
+export async function saveBackupRecord(record: BackupRecord): Promise<void> {
   const db = await openDatabase();
   const transaction = db.transaction(BACKUP_RECORDS_STORE, 'readwrite');
   const store = transaction.objectStore(BACKUP_RECORDS_STORE);
@@ -240,13 +274,9 @@ export async function getBackupRecordsByTimeRange(
 /**
  * Get recent backup records
  */
-export async function getRecentBackupRecords(
-  count: number = 20,
-): Promise<BackupRecord[]> {
+export async function getRecentBackupRecords(count: number = 20): Promise<BackupRecord[]> {
   const allRecords = await getAllBackupRecords();
-  return allRecords
-    .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
-    .slice(0, count);
+  return allRecords.sort((a, b) => b.startTime.getTime() - a.startTime.getTime()).slice(0, count);
 }
 
 /**
@@ -267,16 +297,12 @@ export async function deleteBackupRecord(id: string): Promise<void> {
 /**
  * Prune old backup records (older than retention days)
  */
-export async function pruneOldBackupRecords(
-  retentionDays: number = 30,
-): Promise<number> {
+export async function pruneOldBackupRecords(retentionDays: number = 30): Promise<number> {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
 
   const allRecords = await getAllBackupRecords();
-  const oldRecords = allRecords.filter(
-    (record) => record.startTime < cutoffDate,
-  );
+  const oldRecords = allRecords.filter((record) => record.startTime < cutoffDate);
 
   for (const record of oldRecords) {
     await deleteBackupRecord(record.id);
@@ -292,9 +318,7 @@ export async function pruneOldBackupRecords(
 /**
  * Save or update a backup location
  */
-export async function saveBackupLocation(
-  location: BackupLocation,
-): Promise<void> {
+export async function saveBackupLocation(location: BackupLocation): Promise<void> {
   const db = await openDatabase();
   const transaction = db.transaction(BACKUP_LOCATIONS_STORE, 'readwrite');
   const store = transaction.objectStore(BACKUP_LOCATIONS_STORE);
@@ -309,9 +333,7 @@ export async function saveBackupLocation(
 /**
  * Get a backup location by ID
  */
-export async function getBackupLocation(
-  id: string,
-): Promise<BackupLocation | null> {
+export async function getBackupLocation(id: string): Promise<BackupLocation | null> {
   const db = await openDatabase();
   const transaction = db.transaction(BACKUP_LOCATIONS_STORE, 'readonly');
   const store = transaction.objectStore(BACKUP_LOCATIONS_STORE);
@@ -349,9 +371,7 @@ export async function getAllBackupLocations(): Promise<BackupLocation[]> {
  */
 export async function getEnabledBackupLocations(): Promise<BackupLocation[]> {
   const allLocations = await getAllBackupLocations();
-  return allLocations
-    .filter((loc) => loc.enabled)
-    .sort((a, b) => b.priority - a.priority); // Higher priority first
+  return allLocations.filter((loc) => loc.enabled).sort((a, b) => b.priority - a.priority); // Higher priority first
 }
 
 /**
@@ -376,9 +396,7 @@ export async function deleteBackupLocation(id: string): Promise<void> {
 /**
  * Add an entry to the upload queue
  */
-export async function addToUploadQueue(
-  entry: UploadQueueEntry,
-): Promise<void> {
+export async function addToUploadQueue(entry: UploadQueueEntry): Promise<void> {
   const db = await openDatabase();
   const transaction = db.transaction(UPLOAD_QUEUE_STORE, 'readwrite');
   const store = transaction.objectStore(UPLOAD_QUEUE_STORE);
@@ -393,9 +411,7 @@ export async function addToUploadQueue(
 /**
  * Get a queue entry by record ID
  */
-export async function getQueueEntry(
-  recordId: string,
-): Promise<UploadQueueEntry | null> {
+export async function getQueueEntry(recordId: string): Promise<UploadQueueEntry | null> {
   const db = await openDatabase();
   const transaction = db.transaction(UPLOAD_QUEUE_STORE, 'readonly');
   const store = transaction.objectStore(UPLOAD_QUEUE_STORE);
@@ -499,19 +515,11 @@ export async function calculateBackupAnalytics(
   cutoffDate.setHours(cutoffDate.getHours() - timeWindowHours);
 
   const allRecords = await getAllBackupRecords();
-  const recentRecords = allRecords.filter(
-    (record) => record.startTime >= cutoffDate,
-  );
+  const recentRecords = allRecords.filter((record) => record.startTime >= cutoffDate);
 
   const totalRecordings = recentRecords.length;
-  const totalSize = recentRecords.reduce(
-    (sum, record) => sum + (record.fileSize || 0),
-    0,
-  );
-  const totalDuration = recentRecords.reduce(
-    (sum, record) => sum + (record.duration || 0),
-    0,
-  );
+  const totalSize = recentRecords.reduce((sum, record) => sum + (record.fileSize || 0), 0);
+  const totalDuration = recentRecords.reduce((sum, record) => sum + (record.duration || 0), 0);
 
   // Count upload statuses across all locations
   let successfulUploads = 0;
@@ -522,8 +530,7 @@ export async function calculateBackupAnalytics(
     record.locations.forEach((loc) => {
       if (loc.status === 'completed') successfulUploads++;
       else if (loc.status === 'failed') failedUploads++;
-      else if (loc.status === 'pending' || loc.status === 'uploading')
-        pendingUploads++;
+      else if (loc.status === 'pending' || loc.status === 'uploading') pendingUploads++;
     });
   });
 
@@ -545,16 +552,14 @@ export async function calculateBackupAnalytics(
         (count, record) =>
           count +
           (record.locations.some(
-            (loc) =>
-              loc.locationId === location.id && loc.status === 'completed',
+            (loc) => loc.locationId === location.id && loc.status === 'completed',
           )
             ? 1
             : 0),
         0,
       );
 
-      const successRate =
-        recordingCount > 0 ? (successCount / recordingCount) * 100 : 0;
+      const successRate = recordingCount > 0 ? (successCount / recordingCount) * 100 : 0;
 
       return {
         locationId: location.id,
@@ -570,10 +575,7 @@ export async function calculateBackupAnalytics(
   const sceneCount = new Map<string, number>();
   recentRecords.forEach((record) => {
     if (record.sceneName) {
-      sceneCount.set(
-        record.sceneName,
-        (sceneCount.get(record.sceneName) || 0) + 1,
-      );
+      sceneCount.set(record.sceneName, (sceneCount.get(record.sceneName) || 0) + 1);
     }
   });
   const mostUsedScene =
@@ -581,10 +583,8 @@ export async function calculateBackupAnalytics(
       ? Array.from(sceneCount.entries()).sort((a, b) => b[1] - a[1])[0][0]
       : undefined;
 
-  const averageRecordingDuration =
-    totalRecordings > 0 ? totalDuration / totalRecordings : 0;
-  const averageFileSize =
-    totalRecordings > 0 ? totalSize / totalRecordings : 0;
+  const averageRecordingDuration = totalRecordings > 0 ? totalDuration / totalRecordings : 0;
+  const averageFileSize = totalRecordings > 0 ? totalSize / totalRecordings : 0;
 
   const oldestRecording =
     recentRecords.length > 0
@@ -600,9 +600,7 @@ export async function calculateBackupAnalytics(
         ).startTime
       : undefined;
 
-  const splitRecordingsCount = recentRecords.filter(
-    (record) => record.isSplit,
-  ).length;
+  const splitRecordingsCount = recentRecords.filter((record) => record.isSplit).length;
 
   return {
     totalRecordings,
@@ -627,12 +625,7 @@ export async function calculateBackupAnalytics(
 export async function clearAllBackupData(): Promise<void> {
   const db = await openDatabase();
 
-  const stores = [
-    BACKUP_RECORDS_STORE,
-    BACKUP_LOCATIONS_STORE,
-    UPLOAD_QUEUE_STORE,
-    CONFIG_STORE,
-  ];
+  const stores = [BACKUP_RECORDS_STORE, BACKUP_LOCATIONS_STORE, UPLOAD_QUEUE_STORE, CONFIG_STORE];
 
   for (const storeName of stores) {
     const transaction = db.transaction(storeName, 'readwrite');

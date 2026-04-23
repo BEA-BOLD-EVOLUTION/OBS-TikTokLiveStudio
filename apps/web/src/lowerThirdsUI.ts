@@ -78,11 +78,15 @@ export class LowerThirdsUI {
           <div class="form-group">
             <label>Template</label>
             <select id="lt-template-select" class="select-template">
-              ${this.templates.map(t => `
+              ${this.templates
+                .map(
+                  (t) => `
                 <option value="${t.id}" ${t.id === this.selectedTemplateId ? 'selected' : ''}>
                   ${t.name}
                 </option>
-              `).join('')}
+              `,
+                )
+                .join('')}
             </select>
           </div>
           <div class="form-group">
@@ -121,7 +125,7 @@ export class LowerThirdsUI {
       </div>
     `;
 
-    this.attachEventListeners(state);
+    this.attachEventListeners();
   }
 
   /**
@@ -189,7 +193,9 @@ export class LowerThirdsUI {
           </div>
         </div>
         <div class="queue-items">
-          ${state.queue.map((item, index) => `
+          ${state.queue
+            .map(
+              (item, index) => `
             <div class="queue-item">
               <div class="queue-item-content">
                 <div class="queue-item-text">
@@ -200,7 +206,9 @@ export class LowerThirdsUI {
               </div>
               <button class="btn-remove" data-queue-index="${index}">×</button>
             </div>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </div>
       </div>
     `;
@@ -218,7 +226,9 @@ export class LowerThirdsUI {
       <div class="saved-items">
         <h4>Saved Items</h4>
         <div class="saved-items-list">
-          ${this.savedItems.map((item, index) => `
+          ${this.savedItems
+            .map(
+              (item, index) => `
             <div class="saved-item">
               <div class="saved-item-content">
                 <strong>${item.primaryText}</strong>
@@ -229,7 +239,9 @@ export class LowerThirdsUI {
                 <button class="btn-delete" data-saved-index="${index}">Delete</button>
               </div>
             </div>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </div>
       </div>
     `;
@@ -238,7 +250,7 @@ export class LowerThirdsUI {
   /**
    * Attach event listeners
    */
-  private attachEventListeners(state: LowerThirdsState): void {
+  private attachEventListeners(): void {
     // Show Now button
     const btnShowNow = document.getElementById('btn-show-now');
     btnShowNow?.addEventListener('click', () => this.handleShowNow());
@@ -304,7 +316,7 @@ export class LowerThirdsUI {
     const lowerThird = this.buildLowerThirdFromForm();
     if (!lowerThird) return;
 
-    const template = this.templates.find(t => t.id === this.selectedTemplateId);
+    const template = this.templates.find((t) => t.id === this.selectedTemplateId);
     if (!template) return;
 
     try {
@@ -322,7 +334,7 @@ export class LowerThirdsUI {
     const lowerThird = this.buildLowerThirdFromForm();
     if (!lowerThird) return;
 
-    const template = this.templates.find(t => t.id === this.selectedTemplateId);
+    const template = this.templates.find((t) => t.id === this.selectedTemplateId);
     if (!template) return;
 
     this.manager.addToQueue(lowerThird, template, lowerThird.autoHideDuration);

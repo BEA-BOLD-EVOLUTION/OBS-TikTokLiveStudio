@@ -185,7 +185,8 @@
 }
 
 @keyframes pulse-status {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -293,7 +294,7 @@
   user-select: none;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -479,23 +480,23 @@
   .quick-actions {
     flex-direction: column;
   }
-  
+
   .queue-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .saved-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .saved-item-actions {
     width: 100%;
   }
-  
+
   .btn-load,
   .btn-delete {
     flex: 1;

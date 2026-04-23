@@ -10,21 +10,27 @@ export interface LowerThirdTemplate {
   name: string;
   description?: string;
   style: {
-    fontSize: number;          // Font size in pixels
-    fontFamily: string;        // Font family name
+    fontSize: number; // Font size in pixels
+    fontFamily: string; // Font family name
     fontWeight: 'normal' | 'bold' | '600' | '700' | '800';
-    textColor: string;         // Hex color for text
-    backgroundColor: string;   // Hex color for background
+    textColor: string; // Hex color for text
+    backgroundColor: string; // Hex color for background
     backgroundOpacity: number; // 0-100 opacity percentage
-    padding: number;           // Padding in pixels
-    borderRadius: number;      // Border radius in pixels
-    position: 'bottom-left' | 'bottom-center' | 'bottom-right' | 'top-left' | 'top-center' | 'top-right';
-    offsetX: number;           // X offset in pixels
-    offsetY: number;           // Y offset in pixels
+    padding: number; // Padding in pixels
+    borderRadius: number; // Border radius in pixels
+    position:
+      | 'bottom-left'
+      | 'bottom-center'
+      | 'bottom-right'
+      | 'top-left'
+      | 'top-center'
+      | 'top-right';
+    offsetX: number; // X offset in pixels
+    offsetY: number; // Y offset in pixels
   };
   animation: {
-    fadeIn: number;            // Fade in duration in ms
-    fadeOut: number;           // Fade out duration in ms
+    fadeIn: number; // Fade in duration in ms
+    fadeOut: number; // Fade out duration in ms
   };
 }
 
@@ -34,9 +40,9 @@ export interface LowerThirdTemplate {
 export interface LowerThird {
   id: string;
   templateId: string;
-  primaryText: string;         // Main text (e.g., cohost name)
-  secondaryText?: string;      // Optional secondary text (e.g., social handle)
-  autoHideDuration?: number;   // Auto-hide after X milliseconds (0 = manual hide)
+  primaryText: string; // Main text (e.g., cohost name)
+  secondaryText?: string; // Optional secondary text (e.g., social handle)
+  autoHideDuration?: number; // Auto-hide after X milliseconds (0 = manual hide)
   createdAt: Date;
   lastShown?: Date;
 }
@@ -47,7 +53,7 @@ export interface LowerThird {
 export interface QueuedLowerThird {
   lowerThird: LowerThird;
   template: LowerThirdTemplate;
-  showDuration: number;        // How long to show this item (in ms)
+  showDuration: number; // How long to show this item (in ms)
 }
 
 /**
@@ -58,7 +64,7 @@ export interface LowerThirdsState {
   queue: QueuedLowerThird[];
   isShowing: boolean;
   autoRotateEnabled: boolean;
-  rotateInterval: number;      // Rotation interval in ms (default: 8000)
+  rotateInterval: number; // Rotation interval in ms (default: 8000)
 }
 
 /**
@@ -70,9 +76,9 @@ export interface OBSTextSourceSettings {
   fontSize: number;
   fontFamily: string;
   fontWeight: number;
-  color: number;               // ABGR color format for OBS
-  backgroundColor: number;     // ABGR color format for OBS
-  opacity: number;             // 0-100
+  color: number; // ABGR color format for OBS
+  backgroundColor: number; // ABGR color format for OBS
+  opacity: number; // 0-100
   visible: boolean;
 }
 

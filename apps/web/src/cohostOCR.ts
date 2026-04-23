@@ -3,14 +3,15 @@
  */
 
 import type { OCRResult, ImageRegion } from './cohostTypes.js';
+import type { Worker } from 'tesseract.js';
 
 // Tesseract.js will be imported dynamically to avoid bundle bloat
-let tesseractWorker: any = null;
+let tesseractWorker: Worker | null = null;
 
 /**
  * Initialize Tesseract.js worker (lazy load)
  */
-async function initTesseract(): Promise<any> {
+async function initTesseract(): Promise<Worker> {
   if (tesseractWorker) {
     return tesseractWorker;
   }
@@ -18,7 +19,7 @@ async function initTesseract(): Promise<any> {
   try {
     // Dynamic import to reduce initial bundle size
     const { createWorker } = await import('tesseract.js');
-    
+
     tesseractWorker = await createWorker('eng', 1, {
       logger: (m) => {
         // Optional: Log OCR progress for debugging
@@ -29,9 +30,8 @@ async function initTesseract(): Promise<any> {
     });
 
     await tesseractWorker.setParameters({
-      tessedit_char_whitelist:
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.@',
-      tessedit_pageseg_mode: '7', // Treat image as single text line
+      tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.@',
+      tessedit_pageseg_mode: PSM.SINGLE_LINE, // Treat image as single text line
     });
 
     return tesseractWorker;
@@ -47,16 +47,13 @@ async function initTesseract(): Promise<any> {
  * @param region - Optional: cropped region coordinates (if null, process full image)
  * @returns OCR result with extracted text and confidence
  */
-export async function processImageOCR(
-  imageFile: File,
-  region?: ImageRegion,
-): Promise<OCRResult> {
+export async function processImageOCR(imageFile: File, region?: ImageRegion): Promise<OCRResult> {
   const worker = await initTesseract();
 
   // Create image element from file
   const imageUrl = URL.createObjectURL(imageFile);
   const img = new Image();
-  
+
   await new Promise<void>((resolve, reject) => {
     img.onload = () => resolve();
     img.onerror = () => reject(new Error('Failed to load image'));
@@ -70,7 +67,7 @@ export async function processImageOCR(
     canvas.width = region.width;
     canvas.height = region.height;
     const ctx = canvas.getContext('2d')!;
-    
+
     // Draw cropped region
     ctx.drawImage(
       img,
@@ -83,7 +80,7 @@ export async function processImageOCR(
       region.width,
       region.height,
     );
-    
+
     processImage = canvas;
   }
 
@@ -101,7 +98,7 @@ export async function processImageOCR(
     return {
       text: cleanedText,
       confidence: Math.round(confidence),
-      words: words.map((word: any) => ({
+      words: words.map((word: { text: string; confidence: number; bbox: { x0: number; y0: number; x1: number; y1: number } }) => ({
         text: word.text,
         confidence: Math.round(word.confidence),
         bbox: word.bbox,
@@ -110,7 +107,9 @@ export async function processImageOCR(
   } catch (error) {
     URL.revokeObjectURL(imageUrl);
     console.error('OCR processing failed:', error);
-    throw new Error('Failed to extract text from image. Please try again with a clearer screenshot.');
+    throw new Error(
+      'Failed to extract text from image. Please try again with a clearer screenshot.',
+    );
   }
 }
 
@@ -149,10 +148,7 @@ function cleanUsername(raw: string): string {
  * @param region - Region coordinates to crop
  * @returns Cropped image as data URL
  */
-export async function cropImageRegion(
-  imageFile: File,
-  region: ImageRegion,
-): Promise<string> {
+export async function cropImageRegion(imageFile: File, region: ImageRegion): Promise<string> {
   const imageUrl = URL.createObjectURL(imageFile);
   const img = new Image();
 
@@ -213,10 +209,10 @@ export async function preprocessImageForOCR(imageFile: File): Promise<File> {
   // Convert to grayscale and increase contrast
   for (let i = 0; i < data.length; i += 4) {
     const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-    
+
     // Simple threshold: make text darker, background lighter
     const threshold = gray > 128 ? 255 : 0;
-    
+
     data[i] = threshold; // R
     data[i + 1] = threshold; // G
     data[i + 2] = threshold; // B

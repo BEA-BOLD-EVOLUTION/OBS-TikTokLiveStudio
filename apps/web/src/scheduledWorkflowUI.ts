@@ -14,7 +14,6 @@ import type {
 } from './scheduledWorkflowTypes.js';
 import {
   generateWorkflowId,
-  generateActionId,
   DEFAULT_WORKFLOW_FILTER,
   DEFAULT_WORKFLOW_SCHEDULE,
   WORKFLOW_COLORS,
@@ -26,8 +25,6 @@ import {
   getAllWorkflows,
   saveWorkflow,
   deleteWorkflow,
-  getWorkflowExecutions,
-  calculateWorkflowAnalytics,
 } from './scheduledWorkflowStorage.js';
 import { workflowScheduler } from './scheduledWorkflowEngine.js';
 
@@ -78,7 +75,7 @@ export class ScheduledWorkflowUI {
       execution.success
         ? `Workflow executed: ${execution.workflowName}`
         : `Workflow failed: ${execution.workflowName} - ${execution.error}`,
-      execution.success ? 'success' : 'error'
+      execution.success ? 'success' : 'error',
     );
 
     // Reload workflows to get updated execution counts
@@ -251,9 +248,11 @@ export class ScheduledWorkflowUI {
             <div class="form-group">
               <label>Color</label>
               <div class="color-picker">
-                ${WORKFLOW_COLORS.map((color) => `
+                ${WORKFLOW_COLORS.map(
+                  (color) => `
                   <div class="color-option ${formData.color === color ? 'selected' : ''}" data-color="${color}" style="background-color: ${color}"></div>
-                `).join('')}
+                `,
+                ).join('')}
               </div>
             </div>
 
@@ -275,7 +274,13 @@ export class ScheduledWorkflowUI {
     `;
   }
 
-  private renderScheduleConfig(schedule: any): string {
+  private renderScheduleConfig(schedule: {
+    type: RecurrenceType;
+    date?: string;
+    time?: string;
+    daysOfWeek?: DayOfWeek[];
+    intervalMinutes?: number;
+  }): string {
     switch (schedule.type) {
       case 'once':
         return `
@@ -304,13 +309,25 @@ export class ScheduledWorkflowUI {
           <div class="form-group">
             <label>Days of Week</label>
             <div class="day-picker">
-              ${(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as DayOfWeek[])
-                .map((day) => `
+              ${(
+                [
+                  'monday',
+                  'tuesday',
+                  'wednesday',
+                  'thursday',
+                  'friday',
+                  'saturday',
+                  'sunday',
+                ] as DayOfWeek[]
+              )
+                .map(
+                  (day) => `
                   <label class="day-option">
                     <input type="checkbox" value="${day}" ${schedule.daysOfWeek?.includes(day) ? 'checked' : ''}>
                     ${day.charAt(0).toUpperCase()}
                   </label>
-                `)
+                `,
+                )
                 .join('')}
             </div>
           </div>
@@ -344,9 +361,13 @@ export class ScheduledWorkflowUI {
           <option value="stop-streaming" ${action.type === 'stop-streaming' ? 'selected' : ''}>Stop Streaming</option>
         </select>
 
-        ${action.type === 'switch-scene' ? `
+        ${
+          action.type === 'switch-scene'
+            ? `
           <input type="text" class="action-scene" placeholder="Scene name" value="${action.sceneName || ''}">
-        ` : ''}
+        `
+            : ''
+        }
 
         <input type="number" class="action-delay" placeholder="Delay (ms)" value="${action.delay || 0}" min="0">
 
@@ -462,8 +483,10 @@ export class ScheduledWorkflowUI {
   private async saveWorkflowFromForm(): Promise<void> {
     // Extract form data
     const name = (document.getElementById('workflow-name') as HTMLInputElement)?.value || '';
-    const description = (document.getElementById('workflow-description') as HTMLTextAreaElement)?.value || '';
-    const scheduleType = (document.getElementById('schedule-type') as HTMLSelectElement)?.value as RecurrenceType;
+    const description =
+      (document.getElementById('workflow-description') as HTMLTextAreaElement)?.value || '';
+    const scheduleType = (document.getElementById('schedule-type') as HTMLSelectElement)
+      ?.value as RecurrenceType;
 
     // Build workflow object
     const workflow: Partial<ScheduledWorkflow> = {
@@ -475,9 +498,12 @@ export class ScheduledWorkflowUI {
         type: scheduleType,
         time: (document.getElementById('schedule-time') as HTMLInputElement)?.value,
         date: (document.getElementById('schedule-date') as HTMLInputElement)?.value,
-        intervalMinutes: parseInt((document.getElementById('schedule-interval') as HTMLInputElement)?.value || '15', 10),
+        intervalMinutes: parseInt(
+          (document.getElementById('schedule-interval') as HTMLInputElement)?.value || '15',
+          10,
+        ),
         daysOfWeek: Array.from(document.querySelectorAll('.day-picker input:checked')).map(
-          (el) => (el as HTMLInputElement).value as DayOfWeek
+          (el) => (el as HTMLInputElement).value as DayOfWeek,
         ),
       },
       actions: [],
@@ -485,7 +511,9 @@ export class ScheduledWorkflowUI {
       lastModified: new Date(),
       executionCount: 0,
       tags: [],
-      color: document.querySelector('.color-option.selected')?.getAttribute('data-color') || WORKFLOW_COLORS[0],
+      color:
+        document.querySelector('.color-option.selected')?.getAttribute('data-color') ||
+        WORKFLOW_COLORS[0],
     };
 
     // Validate
@@ -513,7 +541,9 @@ export class ScheduledWorkflowUI {
     // Filter by search query
     if (this.filter.searchQuery) {
       const query = this.filter.searchQuery.toLowerCase();
-      filtered = filtered.filter((w) => w.name.toLowerCase().includes(query) || w.description.toLowerCase().includes(query));
+      filtered = filtered.filter(
+        (w) => w.name.toLowerCase().includes(query) || w.description.toLowerCase().includes(query),
+      );
     }
 
     // Filter by enabled status

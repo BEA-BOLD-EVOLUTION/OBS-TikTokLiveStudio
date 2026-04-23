@@ -51,8 +51,8 @@
 }
 
 .btn-view.active {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
-  border-color: #3B82F6;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #3b82f6;
 }
 
 .auto-backup-body {
@@ -95,7 +95,8 @@
 }
 
 @keyframes recordingPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -195,8 +196,8 @@
   margin-bottom: 0;
 }
 
-.form-label input[type="text"],
-.form-label input[type="number"],
+.form-label input[type='text'],
+.form-label input[type='number'],
 .form-label select {
   background: #1a1d29;
   border: 1px solid #3a3d49;
@@ -207,15 +208,15 @@
   transition: border-color 0.2s;
 }
 
-.form-label input[type="text"]:focus,
-.form-label input[type="number"]:focus,
+.form-label input[type='text']:focus,
+.form-label input[type='number']:focus,
 .form-label select:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.form-label input[type="checkbox"] {
+.form-label input[type='checkbox'] {
   width: 18px;
   height: 18px;
   margin-right: 8px;
@@ -293,7 +294,7 @@
 }
 
 .location-card:hover {
-  border-color: #3B82F6;
+  border-color: #3b82f6;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
@@ -431,8 +432,8 @@
 }
 
 .btn-test-location:hover {
-  background: #3B82F6;
-  border-color: #3B82F6;
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .btn-edit-location:hover {
@@ -480,7 +481,7 @@
 .summary-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .records-list {
@@ -595,7 +596,7 @@
 }
 
 .notification.info {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 }
 
 .notification.success {

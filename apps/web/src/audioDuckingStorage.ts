@@ -1,6 +1,6 @@
 /**
  * Audio Ducking Storage
- * 
+ *
  * IndexedDB persistence layer for ducking events, audio source configurations, and analytics.
  */
 
@@ -10,7 +10,6 @@ import type {
   VADConfig,
   DuckingConfig,
   DuckingAnalytics,
-  AudioDuckingState,
 } from './audioDuckingTypes.js';
 import {
   DEFAULT_VAD_CONFIG,
@@ -18,6 +17,15 @@ import {
   getTimeOfDay,
   calculateEffectiveness,
 } from './audioDuckingTypes.js';
+
+// Serialized types for IndexedDB storage
+type SerializedDuckingEvent = Omit<DuckingEvent, 'timestamp'> & {
+  timestamp: string;
+};
+
+type SerializedOBSAudioSource = Omit<OBSAudioSource, 'lastDucked'> & {
+  lastDucked: string | null;
+};
 
 const DB_NAME = 'AudioDuckingDB';
 const DB_VERSION = 1;
@@ -65,7 +73,7 @@ async function initDatabase(): Promise<IDBDatabase> {
 /**
  * Convert date to ISO string for storage
  */
-function serializeEvent(event: DuckingEvent): any {
+function serializeEvent(event: DuckingEvent): SerializedDuckingEvent {
   return {
     ...event,
     timestamp: event.timestamp.toISOString(),
@@ -75,7 +83,7 @@ function serializeEvent(event: DuckingEvent): any {
 /**
  * Convert ISO string back to Date
  */
-function deserializeEvent(data: any): DuckingEvent {
+function deserializeEvent(data: SerializedDuckingEvent): DuckingEvent {
   return {
     ...data,
     timestamp: new Date(data.timestamp),
@@ -85,7 +93,7 @@ function deserializeEvent(data: any): DuckingEvent {
 /**
  * Serialize audio source
  */
-function serializeSource(source: OBSAudioSource): any {
+function serializeSource(source: OBSAudioSource): SerializedOBSAudioSource {
   return {
     ...source,
     lastDucked: source.lastDucked ? source.lastDucked.toISOString() : null,
@@ -95,7 +103,7 @@ function serializeSource(source: OBSAudioSource): any {
 /**
  * Deserialize audio source
  */
-function deserializeSource(data: any): OBSAudioSource {
+function deserializeSource(data: SerializedOBSAudioSource): OBSAudioSource {
   return {
     ...data,
     lastDucked: data.lastDucked ? new Date(data.lastDucked) : null,
@@ -131,7 +139,7 @@ export async function getAllEvents(): Promise<DuckingEvent[]> {
   const tx = db.transaction(EVENTS_STORE, 'readonly');
   const store = tx.objectStore(EVENTS_STORE);
 
-  const events = await new Promise<any[]>((resolve, reject) => {
+  const events = await new Promise<Array<DuckingEvent & { timestamp: string }>>((resolve, reject) => {
     const request = store.getAll();
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -144,11 +152,12 @@ export async function getAllEvents(): Promise<DuckingEvent[]> {
 /**
  * Get events within time range
  */
-export async function getEventsByTimeRange(startTime: Date, endTime: Date): Promise<DuckingEvent[]> {
+export async function getEventsByTimeRange(
+  startTime: Date,
+  endTime: Date,
+): Promise<DuckingEvent[]> {
   const allEvents = await getAllEvents();
-  return allEvents.filter(
-    (event) => event.timestamp >= startTime && event.timestamp <= endTime
-  );
+  return allEvents.filter((event) => event.timestamp >= startTime && event.timestamp <= endTime);
 }
 
 /**
@@ -156,9 +165,7 @@ export async function getEventsByTimeRange(startTime: Date, endTime: Date): Prom
  */
 export async function getRecentEvents(count: number = 20): Promise<DuckingEvent[]> {
   const allEvents = await getAllEvents();
-  return allEvents
-    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    .slice(0, count);
+  return allEvents.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, count);
 }
 
 /**
@@ -225,7 +232,7 @@ export async function getAudioSource(id: string): Promise<OBSAudioSource | null>
   const tx = db.transaction(SOURCES_STORE, 'readonly');
   const store = tx.objectStore(SOURCES_STORE);
 
-  const data = await new Promise<any>((resolve, reject) => {
+  const data = await new Promise<OBSAudioSource & { lastDucked: string | null } | undefined>((resolve, reject) => {
     const request = store.get(id);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -243,7 +250,7 @@ export async function getAllAudioSources(): Promise<OBSAudioSource[]> {
   const tx = db.transaction(SOURCES_STORE, 'readonly');
   const store = tx.objectStore(SOURCES_STORE);
 
-  const sources = await new Promise<any[]>((resolve, reject) => {
+  const sources = await new Promise<Array<OBSAudioSource & { lastDucked: string | null }>>((resolve, reject) => {
     const request = store.getAll();
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -262,8 +269,8 @@ export async function getEnabledAudioSources(): Promise<OBSAudioSource[]> {
   const store = tx.objectStore(SOURCES_STORE);
   const index = store.index('enabled');
 
-  const sources = await new Promise<any[]>((resolve, reject) => {
-    const request = index.getAll(true);
+  const sources = await new Promise<SerializedOBSAudioSource[]>((resolve, reject) => {
+    const request = index.getAll(IDBKeyRange.only(true));
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
@@ -318,7 +325,7 @@ export async function getVADConfig(): Promise<VADConfig> {
   const tx = db.transaction(CONFIG_STORE, 'readonly');
   const store = tx.objectStore(CONFIG_STORE);
 
-  const data = await new Promise<any>((resolve, reject) => {
+  const data = await new Promise<{ key: string; value: VADConfig } | undefined>((resolve, reject) => {
     const request = store.get('vadConfig');
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -353,7 +360,7 @@ export async function getDuckingConfig(): Promise<DuckingConfig> {
   const tx = db.transaction(CONFIG_STORE, 'readonly');
   const store = tx.objectStore(CONFIG_STORE);
 
-  const data = await new Promise<any>((resolve, reject) => {
+  const data = await new Promise<{ key: string; value: DuckingConfig } | undefined>((resolve, reject) => {
     const request = store.get('duckingConfig');
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -410,13 +417,15 @@ export async function calculateAnalytics(timeWindowHours: number = 24): Promise<
   }
 
   // Calculate averages
-  const avgVoiceDuration = voiceDurations.length > 0
-    ? voiceDurations.reduce((sum, d) => sum + d, 0) / voiceDurations.length
-    : 0;
+  const avgVoiceDuration =
+    voiceDurations.length > 0
+      ? voiceDurations.reduce((sum, d) => sum + d, 0) / voiceDurations.length
+      : 0;
 
-  const avgDuckDuration = duckDurations.length > 0
-    ? duckDurations.reduce((sum, d) => sum + d, 0) / duckDurations.length
-    : 0;
+  const avgDuckDuration =
+    duckDurations.length > 0
+      ? duckDurations.reduce((sum, d) => sum + d, 0) / duckDurations.length
+      : 0;
 
   // Find most ducked source
   const sourceEventCounts = new Map<string, number>();

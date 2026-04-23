@@ -3,13 +3,11 @@
  */
 
 import type {
-  SceneRecommendation,
   RecommendationUIState,
-  SceneAnalytics,
 } from './sceneRecommendationTypes.js';
 import { formatDuration } from './sceneRecommendationTypes.js';
 import { recommendationEngine } from './sceneRecommendationEngine.js';
-import { calculateAnalytics, getConfig, saveConfig } from './sceneRecommendationStorage.js';
+import { calculateAnalytics, getConfig } from './sceneRecommendationStorage.js';
 import type { OBSController } from '@obs-tiktok/obs-controller';
 
 export class SceneRecommendationUI {
@@ -38,14 +36,13 @@ export class SceneRecommendationUI {
    */
   setOBSController(obs: OBSController): void {
     this.obsController = obs;
-    
-    // Subscribe to scene changes
-    if (obs.connection.on) {
-      obs.connection.on('CurrentProgramSceneChanged', (data: { sceneName: string }) => {
-        this.currentScene = data.sceneName;
-        this.updateRecommendations();
-      });
-    }
+
+    // Subscribe to scene changes via raw OBS instance
+    const obsInstance = obs.getOBS();
+    obsInstance.on('CurrentProgramSceneChanged', (data: { sceneName: string }) => {
+      this.currentScene = data.sceneName;
+      this.updateRecommendations();
+    });
   }
 
   /**
@@ -76,9 +73,7 @@ export class SceneRecommendationUI {
     this.render();
 
     try {
-      const recommendations = await recommendationEngine.getRecommendations(
-        this.currentScene
-      );
+      const recommendations = await recommendationEngine.getRecommendations(this.currentScene);
       this.state.currentRecommendations = recommendations;
     } catch (error) {
       console.error('Failed to get recommendations:', error);
@@ -167,7 +162,7 @@ export class SceneRecommendationUI {
             </div>
             <button class="btn-switch" data-scene="${rec.sceneName}">Switch</button>
           </div>
-        `
+        `,
           )
           .join('')}
       </div>

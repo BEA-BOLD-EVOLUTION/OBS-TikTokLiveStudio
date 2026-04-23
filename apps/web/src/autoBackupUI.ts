@@ -10,20 +10,15 @@ import type {
   BackupRecord,
   BackupState,
   UploadProgressEvent,
-  LocationType,
-  CloudProvider,
 } from './autoBackupTypes.js';
 import {
   formatFileSize,
   formatDuration,
-  formatSpeed,
-  formatETA,
   getStatusColor,
   getLocationTypeIcon,
   getCloudProviderIcon,
   getCloudProviderColor,
   SPLIT_INTERVAL_MS,
-  SOURCE_COLORS,
 } from './autoBackupTypes.js';
 import { autoBackupEngine } from './autoBackupEngine.js';
 import {
@@ -33,7 +28,6 @@ import {
   saveBackupLocation,
   deleteBackupLocation,
   getAllBackupRecords,
-  calculateBackupAnalytics,
 } from './autoBackupStorage.js';
 
 type ViewMode = 'config' | 'locations' | 'history';
@@ -41,13 +35,12 @@ type ViewMode = 'config' | 'locations' | 'history';
 export class AutoBackupUI {
   private containerId: string;
   private container: HTMLElement | null = null;
-  private obsController: OBSController | null = null;
   private currentView: ViewMode = 'config';
   private config: BackupConfig | null = null;
   private locations: BackupLocation[] = [];
   private records: BackupRecord[] = [];
   private currentState: BackupState | null = null;
-  private durationInterval: NodeJS.Timeout | null = null;
+  private durationInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(containerId: string) {
     this.containerId = containerId;
@@ -84,8 +77,10 @@ export class AutoBackupUI {
 
     autoBackupEngine.onBackupComplete((recordId, success) => {
       this.showNotification(
-        success ? `Backup completed for recording ${recordId}` : `Backup failed for recording ${recordId}`,
-        success ? 'success' : 'error'
+        success
+          ? `Backup completed for recording ${recordId}`
+          : `Backup failed for recording ${recordId}`,
+        success ? 'success' : 'error',
       );
       this.loadData();
     });
@@ -185,12 +180,16 @@ export class AutoBackupUI {
             <span class="info-label">Duration:</span>
             <span class="info-value duration-display">${formatDuration(duration)}</span>
           </div>
-          ${splitRemaining !== null ? `
+          ${
+            splitRemaining !== null
+              ? `
             <div class="info-row">
               <span class="info-label">Next Split:</span>
               <span class="info-value">${formatDuration(splitRemaining)}</span>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           <div class="info-row">
             <span class="info-label">Split Index:</span>
             <span class="info-value">${this.currentState.splitIndex}</span>
@@ -205,7 +204,11 @@ export class AutoBackupUI {
   }
 
   private getSplitRemainingTime(): number | null {
-    if (!this.config || !this.currentState?.recordingStartTime || this.config.splitInterval === 'none') {
+    if (
+      !this.config ||
+      !this.currentState?.recordingStartTime ||
+      this.config.splitInterval === 'none'
+    ) {
       return null;
     }
 
@@ -302,9 +305,11 @@ export class AutoBackupUI {
           <button class="btn-add-location">+ Add Location</button>
         </div>
         <div class="locations-grid">
-          ${this.locations.length === 0
-            ? '<p class="empty-state">No backup locations configured. Add one to get started.</p>'
-            : this.locations.map((loc) => this.renderLocationCard(loc)).join('')}
+          ${
+            this.locations.length === 0
+              ? '<p class="empty-state">No backup locations configured. Add one to get started.</p>'
+              : this.locations.map((loc) => this.renderLocationCard(loc)).join('')
+          }
         </div>
       </div>
     `;
@@ -337,18 +342,26 @@ export class AutoBackupUI {
             <span class="detail-label">Priority:</span>
             <span class="detail-value">${location.priority}</span>
           </div>
-          ${location.cloudProvider ? `
+          ${
+            location.cloudProvider
+              ? `
             <div class="detail-row">
               <span class="detail-label">Cloud:</span>
               <span class="detail-value cloud-badge" style="background: ${cloudColor}">${cloudIcon} ${location.cloudProvider}</span>
             </div>
-          ` : ''}
-          ${location.lastTestedAt ? `
+          `
+              : ''
+          }
+          ${
+            location.lastTestedAt
+              ? `
             <div class="detail-row">
               <span class="detail-label">Last Tested:</span>
               <span class="detail-value">${this.formatTimeAgo(location.lastTestedAt)}</span>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
         </div>
         <div class="location-actions">
           <button class="btn-test-location" data-location-id="${location.id}">Test</button>
@@ -395,9 +408,11 @@ export class AutoBackupUI {
           </div>
         </div>
         <div class="records-list">
-          ${this.records.length === 0
-            ? '<p class="empty-state">No recordings yet.</p>'
-            : this.records.map((rec) => this.renderRecordCard(rec)).join('')}
+          ${
+            this.records.length === 0
+              ? '<p class="empty-state">No recordings yet.</p>'
+              : this.records.map((rec) => this.renderRecordCard(rec)).join('')
+          }
         </div>
       </div>
     `;
@@ -423,7 +438,7 @@ export class AutoBackupUI {
     `;
   }
 
-  private renderLocationStatus(location: any): string {
+  private renderLocationStatus(location: BackupLocation): string {
     const statusColor = getStatusColor(location.status);
     return `
       <div class="location-status">
@@ -434,22 +449,30 @@ export class AutoBackupUI {
     `;
   }
 
-  private calculateAnalytics(): any {
+  private calculateAnalytics(): {
+    totalRecordings: number;
+    totalSize: number;
+    totalDuration: number;
+    successfulUploads: number;
+    failedUploads: number;
+  } {
     return {
       totalRecordings: this.records.length,
       totalSize: this.records.reduce((sum, r) => sum + r.fileSize, 0),
       totalDuration: this.records.reduce((sum, r) => sum + r.duration, 0),
       successfulUploads: this.records.reduce(
         (sum, r) => sum + r.locations.filter((l) => l.status === 'completed').length,
-        0
+        0,
       ),
       failedUploads: this.records.reduce(
         (sum, r) => sum + r.locations.filter((l) => l.status === 'failed').length,
-        0
+        0,
       ),
       pendingUploads: this.records.reduce(
-        (sum, r) => sum + r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
-        0
+        (sum, r) =>
+          sum +
+          r.locations.filter((l) => l.status === 'pending' || l.status === 'uploading').length,
+        0,
       ),
     };
   }
@@ -541,7 +564,7 @@ export class AutoBackupUI {
     const config: BackupConfig = {
       enabled: formData.get('enabled') === 'on',
       autoStart: formData.get('autoStart') === 'on',
-      splitInterval: formData.get('splitInterval') as any,
+      splitInterval: formData.get('splitInterval') as 'none' | '30min' | '1hr' | '2hr',
       fileNamingPattern: formData.get('fileNamingPattern') as string,
       autoCloudUpload: formData.get('autoCloudUpload') === 'on',
       retryFailedUploads: formData.get('retryFailedUploads') === 'on',
@@ -579,7 +602,8 @@ export class AutoBackupUI {
     }
   }
 
-  private async handleTestLocation(locationId: string): Promise<void> {
+  private async handleTestLocation(): Promise<void> {
+    // locationId parameter removed as it's not yet used in implementation
     this.showNotification('Testing location - not yet implemented', 'info');
   }
 

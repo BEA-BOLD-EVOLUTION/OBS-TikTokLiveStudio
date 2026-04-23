@@ -1,13 +1,11 @@
 /**
  * Audio Ducking UI Component
- * 
+ *
  * User interface for voice activity detection and automatic music ducking.
  */
 
 import type { OBSController } from '@obs-tiktok/obs-controller';
 import type {
-  VADConfig,
-  DuckingConfig,
   OBSAudioSource,
   DuckingEvent,
   AudioDuckingState,
@@ -16,7 +14,6 @@ import {
   generateSourceId,
   getStateColor,
   getStateEmoji,
-  formatAudioLevel,
   formatFrequency,
   formatDuration,
   SOURCE_COLORS,
@@ -29,8 +26,6 @@ import {
   deleteAudioSource,
   saveVADConfig,
   saveDuckingConfig,
-  getVADConfig,
-  getDuckingConfig,
 } from './audioDuckingStorage.js';
 
 /**
@@ -38,7 +33,6 @@ import {
  */
 export class AudioDuckingUI {
   private container: HTMLElement | null = null;
-  private obsController: OBSController | null = null;
   private currentView: 'status' | 'sources' | 'history' = 'status';
   private state: AudioDuckingState | null = null;
   private refreshInterval: number | null = null;
@@ -192,12 +186,16 @@ export class AudioDuckingUI {
                 <span class="metric-label">Confidence:</span>
                 <span class="metric-value">${voiceActivity.confidence}%</span>
               </div>
-              ${voiceActivity.voiceDuration !== null ? `
+              ${
+                voiceActivity.voiceDuration !== null
+                  ? `
                 <div class="metric-row">
                   <span class="metric-label">Voice Duration:</span>
                   <span class="metric-value">${formatDuration(voiceActivity.voiceDuration)}</span>
                 </div>
-              ` : ''}
+              `
+                  : ''
+              }
             </div>
           </div>
 
@@ -208,12 +206,16 @@ export class AudioDuckingUI {
             </div>
             <div class="enabled-sources">
               <p><strong>${enabledSources.length}</strong> source${enabledSources.length !== 1 ? 's' : ''} enabled</p>
-              ${enabledSources.map((s) => `
+              ${enabledSources
+                .map(
+                  (s) => `
                 <div class="source-item" style="border-left-color: ${s.color}">
                   ${s.displayName}
                   ${state === 'ducking' && s.currentVolume < s.originalVolume ? ' 🔉' : ''}
                 </div>
-              `).join('')}
+              `,
+                )
+                .join('')}
             </div>
           </div>
 
@@ -248,7 +250,9 @@ export class AudioDuckingUI {
           <button class="btn-add-source">+ Add Source</button>
         </div>
         <div class="sources-grid">
-          ${this.state.audioSources.map((source) => `
+          ${this.state.audioSources
+            .map(
+              (source) => `
             <div class="source-card" data-source-id="${source.id}">
               <div class="source-header">
                 <div class="source-info">
@@ -284,7 +288,9 @@ export class AudioDuckingUI {
               </div>
               <button class="btn-remove-source" data-source-id="${source.id}">Delete</button>
             </div>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </div>
       </div>
     `;
@@ -341,7 +347,9 @@ export class AudioDuckingUI {
 
       <div class="time-distribution">
         <h3>Time of Day Distribution</h3>
-        ${Object.entries(analytics.timeOfDayDistribution).map(([time, count]) => `
+        ${Object.entries(analytics.timeOfDayDistribution)
+          .map(
+            ([time, count]) => `
           <div class="distribution-item">
             <span class="distribution-label">${time}:</span>
             <div class="distribution-bar-container">
@@ -349,14 +357,21 @@ export class AudioDuckingUI {
             </div>
             <span class="distribution-value">${count}</span>
           </div>
-        `).join('')}
+        `,
+          )
+          .join('')}
       </div>
 
       <div class="events-list">
         <h3>Recent Events</h3>
-        ${recentEvents.length === 0 ? `
+        ${
+          recentEvents.length === 0
+            ? `
           <div class="empty-state">No ducking events yet</div>
-        ` : recentEvents.map((event) => `
+        `
+            : recentEvents
+                .map(
+                  (event) => `
           <div class="event-row ${event.success ? 'success' : 'failed'}">
             <div class="event-time">${this.timeAgo(event.timestamp)}</div>
             <div class="event-type">${event.type.replace(/-/g, ' ')}</div>
@@ -364,7 +379,10 @@ export class AudioDuckingUI {
             ${event.duckAmount !== undefined ? `<div class="event-duck">${event.duckAmount}% duck</div>` : ''}
             ${event.error ? `<div class="event-error">${event.error}</div>` : ''}
           </div>
-        `).join('')}
+        `,
+                )
+                .join('')
+        }
       </div>
     `;
   }
@@ -395,14 +413,18 @@ export class AudioDuckingUI {
     });
 
     // Sensitivity slider
-    const sensitivitySlider = this.container?.querySelector('#sensitivity-slider') as HTMLInputElement;
+    const sensitivitySlider = this.container?.querySelector(
+      '#sensitivity-slider',
+    ) as HTMLInputElement;
     sensitivitySlider?.addEventListener('input', (e) => {
       const value = parseInt((e.target as HTMLInputElement).value);
       this.updateSensitivity(value);
     });
 
     // Duck amount slider
-    const duckAmountSlider = this.container?.querySelector('#duck-amount-slider') as HTMLInputElement;
+    const duckAmountSlider = this.container?.querySelector(
+      '#duck-amount-slider',
+    ) as HTMLInputElement;
     duckAmountSlider?.addEventListener('input', (e) => {
       const value = parseInt((e.target as HTMLInputElement).value);
       this.updateDuckAmount(value);
@@ -504,9 +526,11 @@ export class AudioDuckingUI {
           <div class="form-group">
             <label>Color:</label>
             <div class="color-picker">
-              ${SOURCE_COLORS.map((color) => `
+              ${SOURCE_COLORS.map(
+                (color) => `
                 <div class="color-option" data-color="${color}" style="background-color: ${color}"></div>
-              `).join('')}
+              `,
+              ).join('')}
             </div>
           </div>
         </div>

@@ -16,7 +16,7 @@ import {
   getTimeOfDayIcon,
   getDayTypeIcon,
 } from './sceneRecommendationTypes.js';
-import { getSceneSwitchHistory, getConfig } from './sceneRecommendationStorage.js';
+import { getSceneSwitchHistory } from './sceneRecommendationStorage.js';
 
 /**
  * Recommendation Engine Class
@@ -98,12 +98,13 @@ export class SceneRecommendationEngine {
     // Convert to patterns
     timeOfDayMap.forEach((todMap, sceneName) => {
       const total = Array.from(todMap.values()).reduce((a, b) => a + b, 0);
-      
+
       todMap.forEach((count, tod) => {
         const frequency = count;
         const confidence = Math.min(100, (count / total) * 100);
 
-        if (confidence >= 30) { // Only keep significant patterns
+        if (confidence >= 30) {
+          // Only keep significant patterns
           patterns.push({
             id: `tod-${sceneName}-${tod}`,
             sceneName,
@@ -138,7 +139,7 @@ export class SceneRecommendationEngine {
 
     dayTypeMap.forEach((dtMap, sceneName) => {
       const total = Array.from(dtMap.values()).reduce((a, b) => a + b, 0);
-      
+
       dtMap.forEach((count, dayType) => {
         const frequency = count;
         const confidence = Math.min(100, (count / total) * 100);
@@ -243,7 +244,7 @@ export class SceneRecommendationEngine {
    */
   async getRecommendations(
     currentScene?: string,
-    currentTime?: Date
+    currentTime?: Date,
   ): Promise<SceneRecommendation[]> {
     if (!this.config.enabled) {
       return [];
@@ -263,9 +264,7 @@ export class SceneRecommendationEngine {
 
     // Time-based recommendations
     const timePatterns = this.patterns.filter(
-      (p) =>
-        p.timeOfDay === currentTimeOfDay &&
-        p.confidence >= this.config.confidenceThreshold
+      (p) => p.timeOfDay === currentTimeOfDay && p.confidence >= this.config.confidenceThreshold,
     );
 
     timePatterns.forEach((pattern) => {
@@ -282,13 +281,14 @@ export class SceneRecommendationEngine {
 
     // Day-type recommendations
     const dayPatterns = this.patterns.filter(
-      (p) =>
-        p.dayType === currentDayType &&
-        p.confidence >= this.config.confidenceThreshold
+      (p) => p.dayType === currentDayType && p.confidence >= this.config.confidenceThreshold,
     );
 
     dayPatterns.forEach((pattern) => {
-      if (pattern.sceneName !== currentScene && !recommendations.find(r => r.sceneName === pattern.sceneName)) {
+      if (
+        pattern.sceneName !== currentScene &&
+        !recommendations.find((r) => r.sceneName === pattern.sceneName)
+      ) {
         recommendations.push({
           sceneName: pattern.sceneName,
           reason: `${getDayTypeIcon(currentDayType)} Popular on ${currentDayType}s`,
@@ -302,12 +302,12 @@ export class SceneRecommendationEngine {
     // Sequence-based recommendations (if current scene is known)
     if (currentScene) {
       const sequencePattern = this.patterns.find(
-        (p) => p.sceneName === currentScene && p.commonNextScenes
+        (p) => p.sceneName === currentScene && p.commonNextScenes,
       );
 
       if (sequencePattern && sequencePattern.commonNextScenes) {
         sequencePattern.commonNextScenes.slice(0, 2).forEach((nextScene) => {
-          if (!recommendations.find(r => r.sceneName === nextScene.sceneName)) {
+          if (!recommendations.find((r) => r.sceneName === nextScene.sceneName)) {
             recommendations.push({
               sceneName: nextScene.sceneName,
               reason: `🔄 Often follows "${currentScene}"`,
@@ -321,7 +321,7 @@ export class SceneRecommendationEngine {
 
       // Duration-based recommendations
       const durationPattern = this.patterns.find(
-        (p) => p.sceneName === currentScene && p.averageDuration
+        (p) => p.sceneName === currentScene && p.averageDuration,
       );
 
       if (durationPattern && durationPattern.averageDuration) {

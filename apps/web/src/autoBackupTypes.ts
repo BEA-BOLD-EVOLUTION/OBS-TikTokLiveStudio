@@ -21,12 +21,7 @@ export type CloudProvider = 'onedrive' | 'dropbox' | 'googledrive';
 /**
  * Upload status for a backup location
  */
-export type UploadStatus =
-  | 'pending'
-  | 'uploading'
-  | 'completed'
-  | 'failed'
-  | 'paused';
+export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'failed' | 'paused';
 
 /**
  * Cloud authentication configuration
@@ -101,7 +96,7 @@ export interface BackupRecord {
   splitIndex?: number; // 1, 2, 3, etc.
   parentRecordId?: string; // if split, reference to original recording
   locations: LocationStatus[]; // status for each backup location
-  overallStatus: 'recording' | 'completed' | 'uploading' | 'backed-up' | 'failed';
+  overallStatus: 'recording' | 'completed' | 'uploading' | 'backed-up' | 'failed' | 'pending';
   error?: string;
   createdAt: Date;
 }
@@ -154,13 +149,17 @@ export interface BackupAnalytics {
  */
 export interface BackupState {
   isRecording: boolean;
-  currentRecordId?: string;
-  currentFilePath?: string;
-  recordingStartTime?: Date;
+  currentRecordId?: string | null;
+  currentFilePath?: string | null;
+  recordingStartTime?: Date | null;
   nextSplitTime?: Date;
   splitTimerActive: boolean;
   activeUploads: number;
   queuedUploads: number;
+  splitIndex?: number;
+  isPaused?: boolean;
+  splitTimer?: ReturnType<typeof setTimeout> | null;
+  queueProcessorInterval?: ReturnType<typeof setInterval> | null;
 }
 
 /**
@@ -283,8 +282,7 @@ export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-  if (bytes < 1024 * 1024 * 1024)
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
@@ -308,19 +306,14 @@ export function formatDuration(ms: number): string {
  */
 export function formatSpeed(bytesPerSecond: number): string {
   if (bytesPerSecond < 1024) return `${bytesPerSecond.toFixed(0)} B/s`;
-  if (bytesPerSecond < 1024 * 1024)
-    return `${(bytesPerSecond / 1024).toFixed(2)} KB/s`;
+  if (bytesPerSecond < 1024 * 1024) return `${(bytesPerSecond / 1024).toFixed(2)} KB/s`;
   return `${(bytesPerSecond / (1024 * 1024)).toFixed(2)} MB/s`;
 }
 
 /**
  * Calculate estimated time remaining (milliseconds)
  */
-export function calculateETA(
-  bytesUploaded: number,
-  totalBytes: number,
-  speed: number,
-): number {
+export function calculateETA(bytesUploaded: number, totalBytes: number, speed: number): number {
   if (speed === 0) return 0;
   const remaining = totalBytes - bytesUploaded;
   return (remaining / speed) * 1000; // convert seconds to milliseconds
@@ -412,9 +405,7 @@ export function calculateRetryDelay(retryCount: number): number {
 /**
  * Check if cloud provider is authenticated
  */
-export function isCloudProviderAuthenticated(
-  auth?: CloudAuthConfig,
-): boolean {
+export function isCloudProviderAuthenticated(auth?: CloudAuthConfig): boolean {
   if (!auth) return false;
   // Check if token is expired
   return auth.expiresAt > new Date();

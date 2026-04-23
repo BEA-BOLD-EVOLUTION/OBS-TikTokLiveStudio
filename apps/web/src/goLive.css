@@ -71,7 +71,8 @@
 }
 
 @keyframes pulse-live {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
   }
@@ -371,7 +372,7 @@
   border-color: rgba(16, 185, 129, 0.3);
 }
 
-.checklist-item input[type="checkbox"] {
+.checklist-item input[type='checkbox'] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
@@ -389,12 +390,12 @@
   position: relative;
 }
 
-.checklist-item input[type="checkbox"]:checked + .checkbox-custom {
+.checklist-item input[type='checkbox']:checked + .checkbox-custom {
   background: #10b981;
   border-color: #10b981;
 }
 
-.checklist-item input[type="checkbox"]:checked + .checkbox-custom::after {
+.checklist-item input[type='checkbox']:checked + .checkbox-custom::after {
   content: '✓';
   position: absolute;
   top: 50%;

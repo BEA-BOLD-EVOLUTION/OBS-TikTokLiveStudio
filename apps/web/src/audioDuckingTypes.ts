@@ -1,6 +1,6 @@
 /**
  * Audio Ducking Types
- * 
+ *
  * Type system for voice activity detection and automatic music ducking.
  * Supports real-time audio analysis, configurable ducking behavior, and multi-source management.
  */
@@ -102,7 +102,13 @@ export interface DuckingEvent {
   /** Timestamp */
   timestamp: Date;
   /** Event type */
-  type: 'duck-started' | 'duck-released' | 'voice-detected' | 'voice-ended' | 'source-ducked' | 'source-released';
+  type:
+    | 'duck-started'
+    | 'duck-released'
+    | 'voice-detected'
+    | 'voice-ended'
+    | 'source-ducked'
+    | 'source-released';
   /** Voice activity at time of event */
   voiceActivity: VoiceActivityState;
   /** Sources affected */
@@ -270,7 +276,9 @@ export function generateSourceId(): string {
 /**
  * Get time of day category
  */
-export function getTimeOfDay(date: Date = new Date()): 'morning' | 'afternoon' | 'evening' | 'lateNight' {
+export function getTimeOfDay(
+  date: Date = new Date(),
+): 'morning' | 'afternoon' | 'evening' | 'lateNight' {
   const hour = date.getHours();
   if (hour >= 6 && hour < 12) return 'morning';
   if (hour >= 12 && hour < 18) return 'afternoon';
@@ -368,7 +376,11 @@ export function validateVADConfig(config: VADConfig): string[] {
     errors.push('Sensitivity must be between 0 and 100');
   }
 
-  if (config.fftSize < 32 || config.fftSize > 32768 || !Number.isInteger(Math.log2(config.fftSize))) {
+  if (
+    config.fftSize < 32 ||
+    config.fftSize > 32768 ||
+    !Number.isInteger(Math.log2(config.fftSize))
+  ) {
     errors.push('FFT size must be a power of 2 between 32 and 32768');
   }
 
@@ -434,7 +446,10 @@ export function validateAudioSource(source: OBSAudioSource): string[] {
     errors.push('Current volume must be between 0 and 100');
   }
 
-  if (source.customDuckAmount !== null && (source.customDuckAmount < 0 || source.customDuckAmount > 100)) {
+  if (
+    source.customDuckAmount !== null &&
+    (source.customDuckAmount < 0 || source.customDuckAmount > 100)
+  ) {
     errors.push('Custom duck amount must be between 0 and 100');
   }
 

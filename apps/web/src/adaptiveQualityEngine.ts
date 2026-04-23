@@ -10,15 +10,12 @@ import type {
   AdaptiveQualityConfig,
   AdaptiveQualityState,
   QualityPreset,
-  EngineState,
   AdjustmentReason,
-  NetworkQuality,
 } from './adaptiveQualityTypes.js';
 import {
   DEFAULT_ADAPTIVE_CONFIG,
   DEFAULT_QUALITY_PRESETS,
   calculateNetworkQuality,
-  getPresetForBandwidth,
   getHigherPreset,
   getLowerPreset,
   generateAdjustmentId,
@@ -300,7 +297,10 @@ class AdaptiveQualityEngine {
         } else if (metrics.packetLoss > this.config.thresholds.maxPacketLoss) {
           reason = 'packet-loss';
         }
-      } else if (this.config.autoRecovery && (metrics.quality === 'excellent' || metrics.quality === 'good')) {
+      } else if (
+        this.config.autoRecovery &&
+        (metrics.quality === 'excellent' || metrics.quality === 'good')
+      ) {
         newPreset = getHigherPreset(currentPreset);
         reason = 'stable-recovery';
       } else {
@@ -352,7 +352,7 @@ class AdaptiveQualityEngine {
       this.notifyAdjustment(adjustment);
 
       console.log(
-        `Quality adjusted: ${currentPreset} → ${newPreset} (${reason}, success: ${success})`
+        `Quality adjusted: ${currentPreset} → ${newPreset} (${reason}, success: ${success})`,
       );
     } catch (error) {
       console.error('Error adjusting quality:', error);
@@ -401,7 +401,10 @@ class AdaptiveQualityEngine {
   /**
    * Get adjustment direction
    */
-  private getAdjustmentDirection(from: QualityPreset, to: QualityPreset): 'increase' | 'decrease' | 'maintain' {
+  private getAdjustmentDirection(
+    from: QualityPreset,
+    to: QualityPreset,
+  ): 'increase' | 'decrease' | 'maintain' {
     const order: QualityPreset[] = ['minimal', 'low', 'medium', 'high', 'ultra'];
     const fromIndex = order.indexOf(from);
     const toIndex = order.indexOf(to);

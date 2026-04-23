@@ -5,7 +5,7 @@
 /**
  * Workflow step in the Go Live sequence
  */
-export type WorkflowStep = 
+export type WorkflowStep =
   | 'idle'
   | 'preflight'
   | 'starting'
@@ -55,15 +55,15 @@ export interface GoLiveState {
  * Go Live workflow configuration
  */
 export interface GoLiveConfig {
-  startingScene: string;        // Scene to show during countdown (default: SCN_STARTING)
-  liveScene: string;             // Main live scene (default: SCN_LIVE)
-  countdownDuration: number;     // Countdown in seconds (default: 5)
-  enableRecording: boolean;      // Auto-start recording backup (default: true)
-  enableVirtualCamera: boolean;  // Auto-start virtual camera (default: true)
+  startingScene: string; // Scene to show during countdown (default: SCN_STARTING)
+  liveScene: string; // Main live scene (default: SCN_LIVE)
+  countdownDuration: number; // Countdown in seconds (default: 5)
+  enableRecording: boolean; // Auto-start recording backup (default: true)
+  enableVirtualCamera: boolean; // Auto-start virtual camera (default: true)
   preflightChecks: {
-    obsConnection: boolean;      // Check OBS connected
-    scenesExist: boolean;        // Verify required scenes exist
-    audioLevels: boolean;        // Warn if audio sources silent
+    obsConnection: boolean; // Check OBS connected
+    scenesExist: boolean; // Verify required scenes exist
+    audioLevels: boolean; // Warn if audio sources silent
   };
 }
 

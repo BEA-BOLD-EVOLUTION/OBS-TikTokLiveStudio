@@ -62,6 +62,14 @@ export class OBSController {
   onError(callback: (error: ConnectionError) => void): () => void {
     return this.connectionManager.onError(callback);
   }
+
+  /**
+   * Get raw OBS WebSocket instance for direct event subscriptions
+   * Use sparingly - prefer high-level methods when available
+   */
+  getOBS() {
+    return this.connectionManager.getOBS();
+  }
 }
 
 // Re-export types

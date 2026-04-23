@@ -1,6 +1,6 @@
 /**
  * Audio Ducking Engine
- * 
+ *
  * Real-time voice activity detection and automatic music ducking using Web Audio API.
  */
 
@@ -9,14 +9,10 @@ import type {
   VADConfig,
   DuckingConfig,
   OBSAudioSource,
-  DuckingState,
-  VoiceActivityState,
   DuckingEvent,
   AudioDuckingState,
 } from './audioDuckingTypes.js';
 import {
-  DEFAULT_VAD_CONFIG,
-  DEFAULT_DUCKING_CONFIG,
   DEFAULT_AUDIO_DUCKING_STATE,
   generateEventId,
 } from './audioDuckingTypes.js';
@@ -24,7 +20,6 @@ import {
   getVADConfig,
   getDuckingConfig,
   getAllAudioSources,
-  getEnabledAudioSources,
   saveAudioSource,
   recordDuckingEvent,
 } from './audioDuckingStorage.js';
@@ -333,12 +328,10 @@ export class AudioDuckingEngine {
       audioLevel,
       dominantFrequency,
       confidence,
-      voiceDuration: isVoiceDetected && this.voiceStartTime
-        ? Date.now() - this.voiceStartTime
-        : null,
-      silenceDuration: !isVoiceDetected && this.silenceStartTime
-        ? Date.now() - this.silenceStartTime
-        : null,
+      voiceDuration:
+        isVoiceDetected && this.voiceStartTime ? Date.now() - this.voiceStartTime : null,
+      silenceDuration:
+        !isVoiceDetected && this.silenceStartTime ? Date.now() - this.silenceStartTime : null,
     };
 
     // Handle voice state transitions
@@ -483,7 +476,9 @@ export class AudioDuckingEngine {
       try {
         // TODO: Implement OBS WebSocket audio source volume control
         // Currently logs intended action - needs obs-websocket SetInputVolume call
-        console.log(`[Release] ${source.displayName}: ${source.currentVolume}% → ${source.originalVolume}%`);
+        console.log(
+          `[Release] ${source.displayName}: ${source.currentVolume}% → ${source.originalVolume}%`,
+        );
 
         source.currentVolume = source.originalVolume;
         await saveAudioSource(source);
