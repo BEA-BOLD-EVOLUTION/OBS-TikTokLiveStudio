@@ -27,6 +27,13 @@ export class OBSUIController {
   }
 
   /**
+   * Get the OBS controller instance for external use
+   */
+  getController(): OBSController {
+    return this.obs;
+  }
+
+  /**
    * Connect to OBS
    */
   async connect(): Promise<void> {

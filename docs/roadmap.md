@@ -10,7 +10,7 @@ Enable creators to operate professional live streaming setups (OBS + TikTok Live
 
 ## Architecture Overview
 
-```
+```text
 Creator Interface Layer
     ↓
 [Stream Deck Hardware] ← Physical buttons with LED feedback
@@ -376,7 +376,7 @@ _Main Content Area (Grid View):_
 
 _Main Content Area (List View):_
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │ Topic Changes (8)  [●●] 🔽Name  🔽Duration  🔽Last Used  [+Add]  │
 ├──────────────────────────────────────────────────────────────────┤
@@ -398,7 +398,7 @@ _Main Content Area (List View):_
 
 _Right Panel (Transition Details):_
 
-```
+```text
 ┌─ Morph Effect ──────────────────┐
 │ [  VIDEO PREVIEW  ]             │
 │ [   ▶️ Play   ]                 │

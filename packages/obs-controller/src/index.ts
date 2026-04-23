@@ -2,6 +2,8 @@ import { OBSConnectionManager } from './connection.js';
 import { SceneController } from './scenes.js';
 import { RecordingController } from './recording.js';
 import { VirtualCameraController } from './virtualCamera.js';
+import { MediaSourceController } from './mediaSource.js';
+import { TextSourceController } from './textSource.js';
 import type { OBSConfig, OBSStatus, ConnectionError } from './types.js';
 
 /**
@@ -12,6 +14,8 @@ export class OBSController {
   public scenes: SceneController;
   public recording: RecordingController;
   public virtualCamera: VirtualCameraController;
+  public mediaSource: MediaSourceController;
+  public textSource: TextSourceController;
 
   constructor(config: OBSConfig) {
     this.connectionManager = new OBSConnectionManager(config);
@@ -20,6 +24,8 @@ export class OBSController {
     this.scenes = new SceneController(obs);
     this.recording = new RecordingController(obs);
     this.virtualCamera = new VirtualCameraController(obs);
+    this.mediaSource = new MediaSourceController(obs);
+    this.textSource = new TextSourceController(obs);
   }
 
   /**
@@ -61,3 +67,4 @@ export class OBSController {
 // Re-export types
 export type { OBSConfig, OBSStatus, ConnectionError, Scene } from './types.js';
 export type { ConnectionStatus } from './types.js';
+export type { MediaAction, MediaPlaybackEndedEvent } from './mediaSource.js';
