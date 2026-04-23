@@ -154,12 +154,13 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
     - Grid view (thumbnails) vs List view (compact details)
     - Filter by multiple criteria: color + category + tags
   - Category system: Topic Changes, Sponsors, BRB, Quick Reactions, Intros, Outros, Custom
-    - **Quick Reactions** category: Ultra-short transitions (0.3-1.5 sec) for instant-impact moments like jump scares, flash cuts, and reaction triggers
+    - **Quick Reactions** category: Ultra-short transitions (0.3-1.5 sec) for instant-impact moments - creators import their own jump scares, flash cuts, and reaction triggers
   - Favorites/pinned transitions for quick access
   - Search by name, description, tags, or duration
   - Sort by: most used, recently added, duration, alphabetical, color
   - Thumbnail preview grid (auto-generate from video midpoint frame)
-  - Bulk import from folder (drag-and-drop multiple .mp4 files)
+  - Bulk import from folder (drag-and-drop multiple .mp4 files from computer)
+    - Auto-categorize based on folder name or video duration (e.g., <2 sec → Quick Reactions)
   - Folder-based organization mirrors file structure
 - **Smart selection:** Choose transition based on context ("topic change" vs "break")
 - **Custom playback:** Override video playback speed (slow-mo, fast-forward)
@@ -246,50 +247,6 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
             "returnToPrevious": true
           }
         ]
-      },
-      {
-        "name": "Quick Reactions",
-        "transitions": [
-          {
-            "id": "TRN_JUMPSCARE",
-            "name": "Jump Scare",
-            "video": "transitions/quick/jumpscare.mp4",
-            "duration": 0.8,
-            "description": "Instant shock effect with scream audio",
-            "tags": ["instant", "shock", "loud"],
-            "color": "#EF4444",
-            "emoji": "😱",
-            "favorite": true,
-            "collections": ["Gaming Stream", "Horror"],
-            "returnToPrevious": true
-          },
-          {
-            "id": "TRN_FLASH_CUT",
-            "name": "Flash Cut",
-            "video": "transitions/quick/flash.mp4",
-            "duration": 0.3,
-            "description": "White flash instant transition",
-            "tags": ["instant", "fast", "minimal"],
-            "color": "#FBBF24",
-            "emoji": "⚡",
-            "favorite": false,
-            "collections": ["Gaming Stream"],
-            "returnToPrevious": true
-          },
-          {
-            "id": "TRN_GLITCH_SHOCK",
-            "name": "Glitch Shock",
-            "video": "transitions/quick/glitch-shock.mp4",
-            "duration": 1.2,
-            "description": "Heavy glitch with distortion sound",
-            "tags": ["quick", "intense", "tech"],
-            "color": "#EC4899",
-            "emoji": "🔥",
-            "favorite": true,
-            "collections": ["Gaming Stream", "Reactions"],
-            "returnToPrevious": true
-          }
-        ]
       }
     ],
     "settings": {
@@ -307,11 +264,6 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
           "page": 2,
           "label": "All Topics",
           "transitions": ["TRN_TOPIC_MORPH", "TRN_TOPIC_GLITCH"]
-        },
-        {
-          "page": 3,
-          "label": "Quick Reactions",
-          "transitions": ["TRN_JUMPSCARE", "TRN_FLASH_CUT", "TRN_GLITCH_SHOCK"]
         }
       ]
     }
