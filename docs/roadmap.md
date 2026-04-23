@@ -302,6 +302,286 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 }
 ```
 
+**UX Design (following modern best practices):**
+
+_Layout Structure:_
+
+- **Three-column layout:**
+  - **Left sidebar (240px):** Section navigation + controls
+  - **Main content area (flexible):** Transition grid/list view
+  - **Right panel (320px, collapsible):** Selected transition details + preview
+
+_Section Navigation (Left Sidebar):_
+
+```
+┌─ Transition Library ────────────┐
+│ 🔍 Search all transitions...    │
+├──────────────────────────────────┤
+│ ⭐ Favorites (12)               │
+│                                  │
+│ SECTIONS                         │
+│ ➕ Add Section                   │
+│                                  │
+│ 🌊 Topic Changes (8)      👁️ ▼ │
+│ 💰 Sponsors (3)           👁️ ▼ │
+│ ☕ BRB (2)                👁️ ▼ │
+│ ⚡ Quick Reactions (15)   👁️ ▼ │
+│ 👋 Guest Arrivals (1)     🗑️ ▼ │
+│                                  │
+│ HIDDEN SECTIONS                  │
+│ 🎬 Intros                 👁️‍🗨️  │
+│ 🎭 Outros                 👁️‍🗨️  │
+└──────────────────────────────────┘
+```
+
+- Collapsible accordion per section (▼ expands to show transition list)
+- Eye icon (👁️) = hide/show toggle
+- Trash icon (🗑️) only on custom sections
+- Drag handle (⋮⋮) for reordering sections
+- Badge count shows transitions per section
+- Hover state reveals section-level controls (rename, color theme, hide/delete)
+
+_Main Content Area (Grid View):_
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Topic Changes (8 transitions)          [Grid] [List] [+Add] │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ [THUMB]  │  │ [THUMB]  │  │ [THUMB]  │  │ [THUMB]  │   │
+│  │ 🌊 Morph │  │ ⚡ Glitch │  │ 🌀 Spin  │  │ ✨ Fade  │   │
+│  │ 3.0s ⭐  │  │ 2.0s     │  │ 2.5s ⭐  │  │ 1.5s     │   │
+│  │ ━━━━━━━  │  │ ━━━━━━━  │  │ ━━━━━━━  │  │ ━━━━━━━  │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│                                                               │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ [THUMB]  │  │ [THUMB]  │  │ [THUMB]  │  │ + Add    │   │
+│  │ 💫 Burst │  │ 🔥 Fire  │  │ 🎨 Paint │  │ New      │   │
+│  │ 2.2s     │  │ 1.8s ⭐  │  │ 3.5s     │  │          │   │
+│  │ ━━━━━━━  │  │ ━━━━━━━  │  │ ━━━━━━━  │  │          │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- **Grid cards (180px × 140px):**
+  - Video thumbnail (auto-generated from midpoint)
+  - Emoji + transition name (truncated with ellipsis)
+  - Duration badge (bottom left)
+  - Favorite star (bottom right, toggleable)
+  - Color strip (left border, 4px, section color theme)
+  - Hover: overlay with play preview + edit/delete/duplicate icons
+- **Drag-and-drop:** Reorder within section or move between sections
+- **Multi-select:** Shift+click or Ctrl+click, shows bulk action toolbar
+
+_Main Content Area (List View):_
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ Topic Changes (8)  [●●] 🔽Name  🔽Duration  🔽Last Used  [+Add]  │
+├──────────────────────────────────────────────────────────────────┤
+│ ━━ 🌊 Morph Effect            3.0s    2 hours ago    ⭐ [▶️][✏️] │
+│ ━━ ⚡ Digital Glitch          2.0s    5 days ago        [▶️][✏️] │
+│ ━━ 🌀 Spin Wipe               2.5s    1 hour ago     ⭐ [▶️][✏️] │
+│ ━━ ✨ Cross Fade              1.5s    3 hours ago       [▶️][✏️] │
+│ ━━ 💫 Particle Burst          2.2s    Yesterday         [▶️][✏️] │
+│ ━━ 🔥 Fire Transition         1.8s    30 minutes ago ⭐ [▶️][✏️] │
+│ ━━ 🎨 Paint Splash            3.5s    Never             [▶️][✏️] │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+- Compact rows with sortable columns
+- Color strip (left border ━━)
+- Inline actions: Play preview, Edit, Star favorite
+- Checkbox for multi-select (left side)
+- Click row to expand details in right panel
+
+_Right Panel (Transition Details):_
+
+```
+┌─ Morph Effect ──────────────────┐
+│ [  VIDEO PREVIEW  ]             │
+│ [   ▶️ Play   ]                 │
+├─────────────────────────────────┤
+│ Name: [Morph Effect    ] ✏️     │
+│ Duration: 3.0s                  │
+│ File: morph.mp4                 │
+│                                 │
+│ Description:                    │
+│ [Liquid morph with particle     │
+│  swirl effect             ] ✏️  │
+│                                 │
+│ Tags: smooth elegant      [+]   │
+│ Color: [#3B82F6] 🎨             │
+│ Emoji: [🌊] 🙂                  │
+│                                 │
+│ Collections:                    │
+│ ☑️ Gaming Stream                │
+│ ☑️ Professional                 │
+│ ☐ Tutorial Stream               │
+│                                 │
+│ Settings:                       │
+│ ☑️ Return to previous scene     │
+│ ☐ Go to: [Select scene ▼]      │
+│ ☑️ Add to favorites             │
+│                                 │
+│ Usage: 24 times                 │
+│ Last used: 2 hours ago          │
+│                                 │
+│ [Delete] [Duplicate] [Export]   │
+└─────────────────────────────────┘
+```
+
+- Live video preview (hover to play)
+- Inline editing for all fields (click pencil ✏️)
+- Color picker popup
+- Emoji picker popup
+- Collection checkboxes (multi-select)
+- Usage analytics at bottom
+
+_Bulk Import Flow:_
+
+1. **Drag-and-drop zone:**
+
+   ```
+   ┌────────────────────────────────┐
+   │    📁 Drop video files here    │
+   │                                │
+   │   or click to browse files     │
+   │                                │
+   │  Supports: .mp4, .mov, .webm   │
+   └────────────────────────────────┘
+   ```
+
+2. **Processing modal:**
+
+   ```
+   ┌─ Importing 15 videos ──────────┐
+   │                                │
+   │ ✅ morph.mp4 → Topic Changes   │
+   │ ✅ glitch.mp4 → Topic Changes  │
+   │ ✅ sponsor-a.mp4 → Sponsors    │
+   │ ⏳ jumpscare.mp4 (0.8s)        │
+   │    → Quick Reactions           │
+   │ ❌ invalid.avi (unsupported)   │
+   │                                │
+   │ [━━━━━━━━━━━━━━━━━] 67%       │
+   │                                │
+   │ Auto-categorizing by:          │
+   │ • Duration (< 2s = Quick)      │
+   │ • Folder name                  │
+   │ • File name keywords           │
+   │                                │
+   │      [Cancel] [Continue]       │
+   └────────────────────────────────┘
+   ```
+
+3. **Review and edit:**
+   - Table showing all imported files
+   - Columns: Thumbnail, Name, Duration, Auto-category, Actions
+   - Edit category dropdown before finalizing
+   - Bulk actions: Assign to section, set color, add tags
+
+_Search & Filter UI:_
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🔍 [Search transitions...              ] [Clear] [🔽]  │
+├─────────────────────────────────────────────────────────┤
+│ FILTERS (3 active)                              [Reset] │
+│                                                         │
+│ Sections: [All ▼]                                      │
+│   ☑️ Topic Changes  ☑️ Sponsors  ☐ BRB                │
+│                                                         │
+│ Duration: [Any ▼]                                      │
+│   ○ < 1s  ○ 1-2s  ● 2-4s  ○ > 4s                      │
+│                                                         │
+│ Tags: smooth elegant fast                        [+]   │
+│                                                         │
+│ Color: [All ▼]  🔵 🟣 🟢 🟡 🔴                         │
+│                                                         │
+│ Collections: [All ▼]                                   │
+│   ☑️ Gaming Stream  ☐ Tutorial  ☐ Professional        │
+│                                                         │
+│ [Apply Filters]                                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+- Instant search (debounced 300ms)
+- Multi-select checkboxes for sections and collections
+- Color filter shows section color palette
+- Tag cloud (click to add/remove filter)
+- Active filter count badge
+- Clear all / Reset buttons
+
+_Visual Design System:_
+
+- **Colors:**
+
+  - Background: `#0a0c14` (dark mode base)
+  - Panel: `#1a1d29` (elevated surface)
+  - Accent: `#3B82F6` (primary blue)
+  - Text: `#E5E7EB` (high contrast)
+  - Muted: `#9CA3AF` (secondary text)
+  - Success: `#10B981`, Warning: `#F59E0B`, Error: `#EF4444`
+
+- **Typography:**
+
+  - Headers: Inter Bold 16px/20px/24px
+  - Body: Inter Regular 14px
+  - Labels: Inter Medium 12px
+  - Monospace (duration): JetBrains Mono 12px
+
+- **Spacing:**
+
+  - Grid gap: 16px
+  - Section padding: 24px
+  - Card padding: 12px
+  - Border radius: 8px (cards), 4px (inputs)
+
+- **Animations:**
+  - Hover transitions: 150ms ease
+  - Drag-and-drop: spring physics (react-spring)
+  - Modal enter/exit: 200ms ease-out
+  - Skeleton loading for thumbnails
+
+_Interaction Patterns:_
+
+- **Inline editing:** Click text → input field appears → blur or Enter to save
+- **Drag-and-drop:** Visual indicator shows drop target (dashed border pulse)
+- **Multi-select:** Shift+click for range, Ctrl/Cmd+click for individual
+- **Keyboard shortcuts:**
+
+  - `Ctrl+F` = Focus search
+  - `Space` = Play selected transition preview
+  - `Del` = Delete selected
+  - `Ctrl+D` = Duplicate
+  - `Esc` = Deselect all / close modal
+  - Arrow keys = Navigate grid
+  - `F` = Toggle favorite
+
+- **Toast notifications:**
+  - Success: "3 transitions added to Sponsors" (green, 3s)
+  - Error: "Failed to import video.avi - unsupported format" (red, 5s)
+  - Info: "Section hidden from Stream Deck" (blue, 2s)
+
+_Accessibility (WCAG 2.1 AA):_
+
+- Color contrast ratio ≥ 4.5:1 for text
+- Focus indicators on all interactive elements (2px solid accent)
+- Keyboard navigation for all features
+- ARIA labels for icon-only buttons
+- Screen reader announcements for drag-drop, filter changes
+- Skip links ("Skip to content")
+- Reduced motion support (disable animations if `prefers-reduced-motion`)
+
+_Responsive Design:_
+
+- **Desktop (1920px+):** Full three-column layout
+- **Laptop (1280px):** Right panel collapses to modal on transition select
+- **Tablet (768px):** Left sidebar becomes hamburger menu, grid 2 columns
+- **Mobile (< 768px):** List view only, full-screen modals, bottom sheet for filters
+
 **Technical implementation:**
 
 - Media source in OBS configured to play video file once (no loop)
