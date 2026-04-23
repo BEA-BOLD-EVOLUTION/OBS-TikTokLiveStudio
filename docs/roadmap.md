@@ -144,46 +144,108 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 
 **Advanced features:**
 
-- **Transition library:** Pre-load multiple AI clips (intro, sponsor, topic-change, outro)
+- **Transition library management (20+ videos):**
+  - Category system: Topic Changes, Sponsors, BRB, Intros, Outros, Custom
+  - Favorites/pinned transitions for quick access
+  - Search by name, description, tags, or duration
+  - Sort by: most used, recently added, duration, alphabetical
+  - Thumbnail preview grid (auto-generate from video midpoint frame)
+  - Bulk import from folder (drag-and-drop multiple .mp4 files)
+  - Folder-based organization mirrors file structure
 - **Smart selection:** Choose transition based on context ("topic change" vs "break")
 - **Custom playback:** Override video playback speed (slow-mo, fast-forward)
 - **Queue management:** Schedule multiple transitions (e.g., every 20 minutes)
-- **Stream Deck integration:** Dedicated buttons per transition type
+- **Stream Deck integration:**
+  - Dedicated buttons per transition type (first 8-12 favorites)
+  - Multi-page support (page 1: favorites, page 2: sponsors, etc.)
+  - LED feedback shows active transition playing
 - **Auto-resume:** Remember which scene was active before transition, return to it
 - **Preview mode:** Test transition sequence without going live
 - **Video validation:** Auto-detect video duration, resolution, format on import
+- **Usage analytics:** Track which transitions used most, play counts, last used date
 
 **Configuration example:**
 
 ```json
 {
-  "transitions": [
-    {
-      "id": "TRN_TOPIC_CHANGE",
-      "name": "Topic Change",
-      "video": "transitions/ai-topic-change.mp4",
-      "duration": 3,
-      "description": "Morph effect with particle swirl",
-      "returnToPrevious": true
-    },
-    {
-      "id": "TRN_SPONSOR",
-      "name": "Sponsor Break",
-      "video": "transitions/sponsor-bumper.mp4",
-      "duration": 5,
-      "description": "Glitch transition with brand logo",
-      "returnToPrevious": false,
-      "nextScene": "SCN_LIVE"
-    },
-    {
-      "id": "TRN_BRB",
-      "name": "Be Right Back",
-      "video": "transitions/brb-warp.mp4",
-      "duration": 4,
-      "description": "Warp effect with countdown timer",
-      "returnToPrevious": true
+  "transitionLibrary": {
+    "categories": [
+      {
+        "name": "Topic Changes",
+        "transitions": [
+          {
+            "id": "TRN_TOPIC_MORPH",
+            "name": "Morph Effect",
+            "video": "transitions/topic-change/morph.mp4",
+            "duration": 3,
+            "description": "Liquid morph with particle swirl",
+            "tags": ["smooth", "elegant"],
+            "favorite": true,
+            "returnToPrevious": true
+          },
+          {
+            "id": "TRN_TOPIC_GLITCH",
+            "name": "Digital Glitch",
+            "video": "transitions/topic-change/glitch.mp4",
+            "duration": 2,
+            "description": "Fast digital distortion",
+            "tags": ["fast", "tech"],
+            "favorite": false,
+            "returnToPrevious": true
+          }
+        ]
+      },
+      {
+        "name": "Sponsors",
+        "transitions": [
+          {
+            "id": "TRN_SPONSOR_BRAND_A",
+            "name": "Brand A Bumper",
+            "video": "transitions/sponsors/brand-a.mp4",
+            "duration": 5,
+            "description": "Glitch transition with Brand A logo",
+            "tags": ["sponsor", "branded"],
+            "favorite": true,
+            "returnToPrevious": false,
+            "nextScene": "SCN_LIVE"
+          }
+        ]
+      },
+      {
+        "name": "Be Right Back",
+        "transitions": [
+          {
+            "id": "TRN_BRB_WARP",
+            "name": "Warp Exit",
+            "video": "transitions/brb/warp.mp4",
+            "duration": 4,
+            "description": "Warp effect with countdown timer",
+            "tags": ["break", "countdown"],
+            "favorite": true,
+            "returnToPrevious": true
+          }
+        ]
+      }
+    ],
+    "settings": {
+      "defaultCategory": "Topic Changes",
+      "autoGenerateThumbnails": true,
+      "thumbnailTimestamp": "midpoint",
+      "maxFavorites": 12,
+      "streamDeckPages": [
+        {
+          "page": 1,
+          "label": "Favorites",
+          "transitions": ["TRN_TOPIC_MORPH", "TRN_SPONSOR_BRAND_A", "TRN_BRB_WARP"]
+        },
+        {
+          "page": 2,
+          "label": "All Topics",
+          "transitions": ["TRN_TOPIC_MORPH", "TRN_TOPIC_GLITCH"]
+        }
+      ]
     }
-  ]
+  }
 }
 ```
 
