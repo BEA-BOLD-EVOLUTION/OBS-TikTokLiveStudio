@@ -14,10 +14,10 @@ A creator-first control system that bridges **OBS Studio** and **TikTok Live Stu
 ### Technology Stack
 
 - **Monorepo:** npm workspaces
-- **Language:** TypeScript 5.8.3
+- **Language:** TypeScript 6.0.3
 - **Build Tool:** Vite 7.1.11
 - **OBS Integration:** obs-websocket-js (WebSocket API, not full source)
-- **Formatting:** Prettier 3.5.3
+- **Formatting:** Prettier 3.8.3
 - **Linting:** ESLint 9.24.0
 
 ### Workspace Structure
@@ -123,6 +123,29 @@ OBS-TikTokLiveStudio/
 - ✅ Applied Prettier formatting across entire codebase (32 files)
 - ✅ ESLint clean (zero errors)
 - ✅ All builds passing (`npm run build`)
+
+### Dependency Management
+
+**Standard Rule:** Always check for breaking changes before merging dependency updates.
+
+**Recent Validations (April 22, 2026):**
+
+- ✅ **TypeScript 6.0.3** (from 5.8.3) - Major version bump, zero breaking changes detected
+  - Validated: Build passed, lint passed, all TypeScript code compiles cleanly
+- ✅ **Prettier 3.8.3** (from 3.5.3) - Minor formatting differences expected and acceptable
+  - Validated: Build passed, formatting differences auto-applied
+- ✅ **@types/node 25.6.0** (from 20.19.39) - Major version bump, no type errors
+  - Validated: Build passed, no type compatibility issues
+
+**Workflow:**
+
+1. Fetch PR branch: `git fetch origin pull/N/head:pr-test`
+2. Checkout and install: `git checkout pr-test && npm install`
+3. Full validation: `npm run build && npm run lint && npm test`
+4. If passing: Merge or manually apply changes
+5. Document results in [CONTRIBUTING.md](CONTRIBUTING.md#validation-history)
+
+See [CONTRIBUTING.md](CONTRIBUTING.md#dependency-update-policy) for complete testing procedures.
 
 ## 📋 Comprehensive Roadmap
 
