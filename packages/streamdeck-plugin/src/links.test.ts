@@ -164,8 +164,17 @@ describe('defaultConfigPath', () => {
   });
 
   it('accepts a file:// URL anchor', () => {
-    const result = defaultConfigPath('file:///repo/packages/streamdeck-plugin/dist/index.js');
-    expect(result.replace(/\\/g, '/')).toBe('/repo/config/streamdeck-links.example.json');
+    // Use platform-appropriate file URL (Windows requires drive letter)
+    const fileUrl =
+      process.platform === 'win32'
+        ? 'file:///C:/repo/packages/streamdeck-plugin/dist/index.js'
+        : 'file:///repo/packages/streamdeck-plugin/dist/index.js';
+    const result = defaultConfigPath(fileUrl);
+    const expectedPath =
+      process.platform === 'win32'
+        ? 'C:/repo/config/streamdeck-links.example.json'
+        : '/repo/config/streamdeck-links.example.json';
+    expect(result.replace(/\\/g, '/')).toBe(expectedPath);
   });
 
   it('uses this module as the default anchor', () => {
