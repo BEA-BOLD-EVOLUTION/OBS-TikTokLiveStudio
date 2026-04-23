@@ -119,7 +119,76 @@ TikTok Live Studio ← Receives video feed (no API integration needed)
 - Queue multiple lower thirds (rotate every 8 seconds)
 - Update text content from web UI without editing OBS
 
-### 🎵 Audio Scene Switching
+### � AI Transition Sequences
+
+**Automated transition sandwich (transition out → video → transition in):**
+
+**Common use cases:**
+
+- Topic/segment changes with branded interludes
+- Sponsor break bumpers
+- "We'll be right back" moments
+- Chapter markers in long-form content
+
+**One-click automation:**
+
+```yaml
+[Play Transition] button →
+  1. Fade out current scene (1 second)
+  2. Switch to SCN_TRANSITION (media source with AI-generated video)
+  3. Play video clip (auto-detect duration or use preset length)
+  4. When video ends → trigger transition back
+  5. Fade in to previous scene or next scene (1 second)
+  6. Resume normal audio/video flow
+```
+
+**Advanced features:**
+
+- **Transition library:** Pre-load multiple AI clips (intro, sponsor, topic-change, outro)
+- **Smart selection:** Choose transition based on context ("topic change" vs "break")
+- **Custom timing:** Override fade duration, video playback speed
+- **Queue management:** Schedule multiple transitions (e.g., every 20 minutes)
+- **Stream Deck integration:** Dedicated buttons per transition type
+- **Auto-resume:** Remember which scene was active before transition, return to it
+- **Preview mode:** Test transition sequence without going live
+
+**Configuration example:**
+
+```json
+{
+  "transitions": [
+    {
+      "id": "TRN_TOPIC_CHANGE",
+      "name": "Topic Change",
+      "video": "transitions/ai-topic-change.mp4",
+      "duration": 3,
+      "fadeOut": 1,
+      "fadeIn": 1,
+      "returnToPrevious": true
+    },
+    {
+      "id": "TRN_SPONSOR",
+      "name": "Sponsor Break",
+      "video": "transitions/sponsor-bumper.mp4",
+      "duration": 5,
+      "fadeOut": 0.5,
+      "fadeIn": 0.5,
+      "returnToPrevious": false,
+      "nextScene": "SCN_LIVE"
+    }
+  ]
+}
+```
+
+**Technical implementation:**
+
+- Media source in OBS configured to play video file once (no loop)
+- Webhook or callback when media playback ends
+- State machine tracks: previous scene → transition → next scene
+- Stream Deck buttons trigger by transition ID
+- Web UI shows transition preview thumbnails + duration
+
+### �🎵 Audio Scene Switching
 
 **Smart audio mixing per scene:**
 
