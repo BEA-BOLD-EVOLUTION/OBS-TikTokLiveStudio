@@ -167,6 +167,197 @@ export function renderShell(steps: readonly SetupStep[] = setupSteps): string {
       font-size: 0.9rem;
       color: #9fafcf;
     }
+
+    /* OBS Dashboard Styles */
+    .obs-dashboard {
+      margin-top: 2rem;
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .obs-status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .obs-status-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-dot.disconnected {
+      background: #ef4444;
+    }
+
+    .status-dot.connecting {
+      background: #f59e0b;
+    }
+
+    .status-dot.connected {
+      background: #10b981;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+      animation: flash 0.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .obs-controls {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .control-section h3 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      color: var(--accent-2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .obs-btn {
+      padding: 0.75rem 1.25rem;
+      background: rgba(106, 169, 255, 0.16);
+      border: 1px solid rgba(106, 169, 255, 0.4);
+      border-radius: 8px;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .obs-btn:hover:not(:disabled) {
+      background: rgba(106, 169, 255, 0.26);
+      border-color: rgba(106, 169, 255, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .obs-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .scene-list {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .scene-btn {
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 150ms ease;
+    }
+
+    .scene-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent);
+    }
+
+    .scene-btn.active {
+      background: rgba(106, 169, 255, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .status-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    .status-item span {
+      color: var(--muted);
+    }
+
+    .status-item strong {
+      color: var(--text);
+    }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(1rem);
+      transition: all 300ms ease;
+      z-index: 1000;
+      max-width: 400px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .toast-error {
+      background: #ef4444;
+      color: white;
+    }
   </style>
 
   <main class="page">

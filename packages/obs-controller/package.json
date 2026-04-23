@@ -1,0 +1,17 @@
+{
+  "name": "@obs-tiktok/obs-controller",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "obs-websocket-js": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.8.3",
+    "vitest": "^3.0.6"
+  }
+}
