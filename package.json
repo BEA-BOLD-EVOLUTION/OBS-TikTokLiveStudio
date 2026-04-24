@@ -24,6 +24,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:file": "vitest run --reporter=verbose",
+    "test:incremental": "vitest run --changed --bail",
+    "test:strict": "vitest run --bail",
     "prepare": "husky"
   },
   "lint-staged": {

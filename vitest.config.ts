@@ -19,6 +19,13 @@ export default defineConfig({
       },
       {
         test: {
+          name: 'obs-controller',
+          include: ['packages/obs-controller/src/**/*.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
           name: 'config',
           include: ['config/**/*.test.ts'],
           environment: 'node',
@@ -28,7 +35,11 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      include: ['apps/web/src/**/*.ts', 'packages/streamdeck-plugin/src/**/*.ts'],
+      include: [
+        'apps/web/src/**/*.ts',
+        'packages/streamdeck-plugin/src/**/*.ts',
+        'packages/obs-controller/src/**/*.ts',
+      ],
       exclude: [
         '**/*.test.ts',
         '**/*.d.ts',
