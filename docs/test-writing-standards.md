@@ -1,5 +1,33 @@
 # Test Writing Standards
 
+## Code Quality Standards (CRITICAL)
+
+**All test code must pass ESLint validation BEFORE committing.**
+
+### Required Practices
+
+- ✅ **Use proper TypeScript types** - NEVER use `as any`
+- ✅ **Use `as never` for intentionally untestable code**
+- ✅ **Use `ReturnType<typeof vi.fn>` for mocked functions**
+- ✅ **Remove ALL unused imports and variables**
+- ✅ **Run `npm run lint` during development**, not just at commit time
+
+### Anti-patterns to AVOID
+
+- ❌ `as any` type assertions (causes @typescript-eslint/no-explicit-any errors)
+- ❌ Unused imports (causes @typescript-eslint/no-unused-vars errors)
+- ❌ Committing without running lint checks first
+
+### Workflow
+
+1. Write test code with proper types from the start
+2. **Run `npm run lint`** to verify code quality
+3. Fix any errors immediately
+4. Run tests to verify functionality
+5. Commit only when BOTH lint and tests pass
+
+---
+
 ## MANDATORY Workflow
 
 ### Before Writing ANY Test File
@@ -152,7 +180,7 @@ expect(createExampleTransitions()).toHaveLength(10); // Matches reality
 
 ## What Went Wrong (April 24, 2026 Post-Mortem)
 
-### Violations:
+### Violations
 
 1. ❌ Created 31 test files in batch without incremental validation
 2. ❌ Never read implementation files before writing tests
@@ -161,20 +189,20 @@ expect(createExampleTransitions()).toHaveLength(10); // Matches reality
 5. ❌ Copied broken IndexedDB pattern to 7 files without testing it
 6. ❌ Discovered 47.8% failure rate only after creating everything
 
-### Result:
+### Result
 
 - 301/630 tests failing
 - 2 unhandled errors crashing test suite
 - Attempted fixes made it WORSE (+3 failures)
 - Cannot measure coverage until tests fixed
 
-### Prevention:
+### Prevention
 
 **NEVER AGAIN:** This document exists to prevent recurrence.
 
 ## Going Forward: Correct Methodology
 
-### For EVERY test file:
+### For EVERY test file
 
 1. Read implementation file completely
 2. Read TypeScript interfaces/types
@@ -185,7 +213,7 @@ expect(createExampleTransitions()).toHaveLength(10); // Matches reality
 7. Verify 100% pass
 8. Only then move to next file
 
-### Quality Metrics:
+### Quality Metrics
 
 - **Target**: 0% failure rate on first run of each test file
 - **Measurement**: Tests per implementation file read (should be 1:1)
