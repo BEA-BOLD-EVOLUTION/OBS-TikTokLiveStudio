@@ -16,6 +16,6 @@
   },
   "dependencies": {
     "obs-websocket-js": "^5.0.8",
-    "tesseract.js": "^5.1.0"
+    "tesseract.js": "^7.0.0"
   }
 }
